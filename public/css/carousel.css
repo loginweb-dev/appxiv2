@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+/* * {
+    margin: 0;
+    padding: 0;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+
+.slider-box {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.card {
+    max-width: 22rem;
+    min-width: 20rem;
+    overflow: hidden;
+    margin-left: .8rem;
+    margin-right: .8rem;
+    border-radius: .5rem;
+    transition: box-shadow .3s, transform .3s;
+    box-shadow: 0 4px 10px 2px rgba(0, 0, 0, .06);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 10px 2px rgba(0, 0, 0, .06);
+}
+
+.card .header .profile-pic {
+    width: 100%;
+    height: 15rem;
+    background-size: 22rem;
+    background-repeat: no-repeat;
+    transition: border-radius .3s;
+    background-position: center -3rem;
+}
+
+.card .details {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card .details h2 {
+    font-size: 2rem;
+    color: rgb(0 0 0 / 80%);
+    margin-top: .4rem;
+    letter-spacing: 1px;
+}
+
+.card .details .profession {
+    margin-bottom: .4rem;
+    color: rgb(0 0 0 / 35%);
+}
+
+.card .details .social {
+    margin-top: .5rem;
+}
+
+.card .details .social i {
+    cursor: pointer;
+    font-size: 1.4rem;
+    margin-right: 1rem;
+    transition: color .3s;
+    color: rgb(0 0 0 / 55%);
+}
+
+.card .details .social i:hover {
+    color: rgb(0 0 0 / 85%);
+}
+
+.card .footer {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.card .footer div {
+    margin-top: 1rem;
+    text-align: center;
+    margin-left: 1.2rem;
+    margin-bottom: 1.2rem;
+    padding-right: 1.2rem;
+    border-right: 1px solid rgb(0 0 0 / 40%);
+}
+
+.card .footer div:first-child {
+    margin-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.card .footer div:last-child {
+    border-right: 0;
+    padding-right: 1.2rem;
+}
+
+.card .footer div .count {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: rgb(0 0 0 / 80%);
+}
+
+.owl-carousel .owl-stage-outer {
+    position: relative;
+    overflow: hidden;
+    height: 30rem;
+    padding-top: 5rem;
+    -webkit-transform: translate3d(0, 0, 0);
+}
+
+.owl-nav {
+    display: none;
+}
+
+.owl-dots {
+    display: flex;
+    justify-content: center;
+}
+
+.owl-dots .owl-dot {
+    width: 1.8rem;
+    height: 0.8rem;
+    margin-left: 0.5rem;
+    border-radius: 50px;
+    margin-right: 0.5rem;
+    border: 2px solid #000!important;
+}
+
+.owl-dots .owl-dot.active {
+    transition: all 0.3s;
+    background-color: #000;
+}
+
+.owl-item.active {
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 375px) {
+    .card {
+        min-width: 18rem;
+    }
+}

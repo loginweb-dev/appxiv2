@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Appxi</title>
+	<style>
+		.center {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 50%;
+		}
+		.responsive {
+			width: 100%;
+			height: auto;
+		}
+		h1 {
+			text-align:center;
+		}
+		/* CSS */
+		.button-88 {
+			display: flex;
+			align-items: center;
+			font-family: inherit;
+			font-weight: 500;
+			font-size: 16px;
+			padding: 0.7em 1.4em 0.7em 1.1em;
+			color: white;
+			background: #ad5389;
+			background: linear-gradient(0deg, rgba(20,167,62,1) 0%, rgba(102,247,113,1) 100%);
+			border: none;
+			box-shadow: 0 0.7em 1.5em -0.5em #14a73e98;
+			letter-spacing: 0.05em;
+			border-radius: 20em;
+			cursor: pointer;
+			user-select: none;
+			-webkit-user-select: none;
+			touch-action: manipulation;
+		}
+		.button-88:hover {
+			box-shadow: 0 0.5em 1.5em -0.5em #14a73e98;
+		}
+		.button-88:active {
+			box-shadow: 0 0.3em 1em -0.5em #14a73e98;
+		}
+	</style>
+</head>
+<body>
+	<div class="center">	
+		<h1>Chatbot appxi.net v2.0</h1>
+		<div class="center">
+			<button class="button-88" onclick="return location.reload()">Recargar</button>
+		</div>	
+		<p>Escanea el QR con tu whatsapp para iniciar con el CHATBOT, si falla recarga y vuelve a interntar</p>
+		<% if(wweb){ %>
+			<img src="ok.png" alt="" class="responsive">
+			<p>Chatbot en linea</p>
+		<% } else { %>
+			<img src="qrwb.png" alt="">
+			<p>Intento: <%= count %></p>
+		<% } %>
+	</div>
+</body>
+</html>

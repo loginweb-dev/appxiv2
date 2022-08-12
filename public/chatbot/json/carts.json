@@ -1,0 +1,105 @@
+{
+    "59172834094@c.us": 22,
+    "59170269362@c.us": {
+        "nombre": "Costillas",
+        "precio": 18,
+        "extra": false,
+        "negocio_nombre": "El Loco Gibas & Grill"
+    },
+    "59171130523@c.us": {
+        "nombre": "Burguer Classic",
+        "precio": 14,
+        "extra": [
+            {
+                "id": 1,
+                "nombre": "Tocino",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 3,
+                "created_at": "2022-07-18T18:17:00.000000Z",
+                "updated_at": "2022-07-18T18:17:00.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 2,
+                "nombre": "Jamon",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 3,
+                "created_at": "2022-07-18T18:17:20.000000Z",
+                "updated_at": "2022-07-18T18:17:20.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 3,
+                "nombre": "Huevo",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 2,
+                "created_at": "2022-07-18T18:17:45.000000Z",
+                "updated_at": "2022-07-18T18:17:45.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 4,
+                "nombre": "Queso",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 2,
+                "created_at": "2022-07-18T18:17:55.000000Z",
+                "updated_at": "2022-07-18T18:17:55.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 5,
+                "nombre": "Chorizo",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 6,
+                "created_at": "2022-07-18T18:18:07.000000Z",
+                "updated_at": "2022-07-18T18:18:07.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 6,
+                "nombre": "Carne Hamburguesa",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 6,
+                "created_at": "2022-07-18T18:18:59.000000Z",
+                "updated_at": "2022-07-18T18:19:11.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 7,
+                "nombre": "Carne Lomito",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 6,
+                "created_at": "2022-07-18T18:19:24.000000Z",
+                "updated_at": "2022-07-18T18:19:24.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 8,
+                "nombre": "Papas Fritas",
+                "descripcion": null,
+                "negocio_id": 1,
+                "precio": 5,
+                "created_at": "2022-07-18T18:19:40.000000Z",
+                "updated_at": "2022-07-18T18:19:40.000000Z",
+                "deleted_at": null,
+                "image": null
+            }
+        ],
+        "negocio_id": 1,
+        "negocio_nombre": "Skot Burger"
+    }
+}

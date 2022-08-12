@@ -1,0 +1,81 @@
+{
+    "59171130523@c.us": {
+        "id": 8,
+        "created_at": "2022-08-09T23:33:49.000000Z",
+        "updated_at": "2022-08-09T23:33:50.000000Z",
+        "deleted_at": null,
+        "cliente_id": 1,
+        "mensajero_id": 1,
+        "pago_id": 1,
+        "descuento": 0,
+        "total": 35,
+        "chatbot_id": "59171130523@c.us",
+        "ubicacion_id": 1,
+        "estado_id": 1,
+        "total_delivery": 6,
+        "negocios": 1,
+        "published": "hace 1 segundo",
+        "fecha": "2022-08-09",
+        "cliente": {
+            "id": 1,
+            "created_at": "2022-07-25T17:49:56.000000Z",
+            "updated_at": "2022-07-25T17:50:05.000000Z",
+            "deleted_at": null,
+            "nombre": "Percy Alvarez",
+            "telefono": null,
+            "direccion": null,
+            "latitud": null,
+            "longitud": null,
+            "chatbot_id": "59171130523@c.us",
+            "chatbot_status": null,
+            "poblacion_id": 1,
+            "modo": "cliente",
+            "published": "hace 2 semanas",
+            "fecha": "2022-07-25"
+        },
+        "productos": [
+            {
+                "id": 8,
+                "created_at": "2022-08-09T23:33:49.000000Z",
+                "updated_at": "2022-08-09T23:33:49.000000Z",
+                "deleted_at": null,
+                "pedido_id": 8,
+                "producto_id": null,
+                "producto_name": "MILACESAR",
+                "precio": 35,
+                "cantidad": 1,
+                "total": 35,
+                "negocio_id": 12,
+                "negocio_name": "Bibosi Trinidad",
+                "published": "hace 1 segundo"
+            }
+        ],
+        "ubicacion": {
+            "id": 1,
+            "latitud": -14.8000014,
+            "longitud": -64.8703225,
+            "cliente_id": 1,
+            "created_at": "2022-08-04T21:13:48.000000Z",
+            "updated_at": "2022-08-04T21:13:54.000000Z",
+            "deleted_at": null,
+            "detalles": "en mi casa"
+        },
+        "mensajero": {
+            "id": 1,
+            "created_at": "2022-06-23T22:52:55.000000Z",
+            "updated_at": "2022-07-22T17:59:33.000000Z",
+            "deleted_at": null,
+            "telefono": "0",
+            "nombre": "sin mensajero",
+            "estado": 0,
+            "motorizado": null,
+            "celular": null,
+            "avatar": null,
+            "poblacion_id": 1,
+            "user_id": 1,
+            "published": "hace 1 mes",
+            "fecha": "2022-06-23"
+        },
+        "banipaydos": null
+    }
+}

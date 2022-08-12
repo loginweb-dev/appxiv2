@@ -1,0 +1,37 @@
+/* Your custom styles */
+
+
+@media only screen and (min-width: 1200px) {
+    .android {
+        margin-top: 60px !important;
+        margin-left: 150px;
+    }
+    .tamaño {
+        width: 250px !important;
+       
+    }
+
+}
+@media only screen and (max-width: 30em) {
+    .android {
+        margin-top: 70px;
+        margin-left: 80px;
+    }
+
+    .tamaño {
+        width: 200px;
+    }
+}
+
+@media (orientation:landscape) {
+    .android {
+        margin-top: 60px;
+        margin-left: 100px;
+    }
+
+    .tamaño {
+        width: 100px;
+    }
+
+}
+

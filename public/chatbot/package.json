@@ -1,0 +1,28 @@
+{
+  "name": "chatbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "facebook-bot-messenger": "^1.0.9",
+    "messenger-bot": "^2.5.0",
+    "node-url-shortener": "^2.0.3",
+    "puppeteer": "^15.3.0",
+    "qr-image": "^3.2.0",
+    "qrcode-terminal": "^0.12.0",
+    "simple-json-db": "^2.0.0",
+    "socket.io-client": "^4.5.1",
+    "whatsapp-web.js": "^1.17.0",
+    "xterm": "^4.19.0"
+  }
+}

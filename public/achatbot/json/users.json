@@ -1,0 +1,119 @@
+{
+    "59171130523@c.us": {
+        "id": 2,
+        "created_at": "2022-06-24T21:49:44.000000Z",
+        "updated_at": "2022-08-02T13:57:34.000000Z",
+        "deleted_at": null,
+        "telefono": "59171130523@c.us",
+        "nombre": "percy alvarez",
+        "estado": 0,
+        "motorizado": null,
+        "celular": null,
+        "avatar": null,
+        "poblacion_id": 1,
+        "user_id": 4,
+        "published": "hace 1 mes",
+        "fecha": "2022-06-24",
+        "user": {
+            "id": 4,
+            "role_id": 4,
+            "name": "Percy Alvarez Chofer",
+            "email": "percyalvarezchofer@loginweb.dev",
+            "avatar": "users/default.png",
+            "email_verified_at": null,
+            "password": "$2y$10$uleta4s0kyrB/c0AErCSau//DHCO0JGevcP.FKFpN8iYpt3AYCM.6",
+            "remember_token": null,
+            "settings": {
+                "locale": "es"
+            },
+            "created_at": "2022-07-19T20:53:38.000000Z",
+            "updated_at": "2022-07-19T20:53:38.000000Z"
+        },
+        "localidad": {
+            "id": 1,
+            "nombre": "Trinidad - Beni",
+            "created_at": "2022-06-30T16:04:04.000000Z",
+            "updated_at": "2022-07-05T02:05:38.000000Z",
+            "deleted_at": null,
+            "tarifa": 4
+        },
+        "pedidos": []
+    },
+    "59170269362@c.us": {
+        "id": 3,
+        "created_at": "2022-06-27T13:46:57.000000Z",
+        "updated_at": "2022-07-29T14:25:32.000000Z",
+        "deleted_at": null,
+        "telefono": "59170269362@c.us",
+        "nombre": "Jonathan Chavez",
+        "estado": 0,
+        "motorizado": null,
+        "celular": null,
+        "avatar": null,
+        "poblacion_id": 1,
+        "user_id": 5,
+        "published": "hace 1 mes",
+        "fecha": "2022-06-27",
+        "user": {
+            "id": 5,
+            "role_id": 4,
+            "name": "Jonathan Chavez",
+            "email": "jonathanchavezchofer@loginweb.dev",
+            "avatar": "users/default.png",
+            "email_verified_at": null,
+            "password": "$2y$10$u2xu4rj/U496E4P/gHgCS.EaCzzXrTS32peiBZbtGnc5pRWI5Xtm2",
+            "remember_token": null,
+            "settings": {
+                "locale": "es"
+            },
+            "created_at": "2022-07-19T20:54:36.000000Z",
+            "updated_at": "2022-07-19T20:54:36.000000Z"
+        },
+        "localidad": {
+            "id": 1,
+            "nombre": "Trinidad - Beni",
+            "created_at": "2022-06-30T16:04:04.000000Z",
+            "updated_at": "2022-07-05T02:05:38.000000Z",
+            "deleted_at": null,
+            "tarifa": 4
+        },
+        "pedidos": [
+            {
+                "id": 1,
+                "created_at": "2022-07-29T14:07:10.000000Z",
+                "updated_at": "2022-07-29T14:15:45.000000Z",
+                "deleted_at": null,
+                "cliente_id": 1,
+                "mensajero_id": 3,
+                "pago_id": null,
+                "descuento": 0,
+                "total": 28,
+                "chatbot_id": "59171130523@c.us",
+                "ubicacion_id": 1,
+                "estado_id": 2,
+                "total_delivery": 4,
+                "negocios": 1,
+                "published": "hace 4 días",
+                "fecha": "2022-07-29"
+            },
+            {
+                "id": 2,
+                "created_at": "2022-07-29T14:22:30.000000Z",
+                "updated_at": "2022-07-29T14:25:32.000000Z",
+                "deleted_at": null,
+                "cliente_id": 1,
+                "mensajero_id": 3,
+                "pago_id": null,
+                "descuento": 0,
+                "total": 17,
+                "chatbot_id": "59171130523@c.us",
+                "ubicacion_id": 1,
+                "estado_id": 2,
+                "total_delivery": 4,
+                "negocios": 1,
+                "published": "hace 4 días",
+                "fecha": "2022-07-29"
+            }
+        ]
+    }
+}
