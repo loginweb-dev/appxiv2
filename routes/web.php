@@ -6,6 +6,10 @@ use App\Imports\ProductosImport;
 use App\Imports\CategoriasImport;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use TCG\Voyager\Models\User;
+use App\Cliente;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,9 +29,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/login', function () {
-    return view('login');
-});
+
 
 Route::get('/nosotros', function () {
     return view('welcome');
@@ -47,9 +49,41 @@ Route::get('mensajero/{chatbot_id}', function ($chatbot_id) {
 });
 
 Route::get('cliente/{phone}', function ($phone) {
+    
     $pedidos = App\Negocio::where('chatbot_id', $phone)->first();
     return view('mispedidos', compact('pedidos')); 
 });
+
+Route::get('setauth/{user_id}', function ($user_id) {
+    // return $user_id;
+    // if(Auth::user()){
+        $miuser = User::find($user_id);
+        $micliente = Cliente::where('user_id', $user_id)->first();
+        Auth::login($miuser);
+        return view('perfil', compact('miuser', 'micliente'));
+    // } else {
+
+    //     return view('login');
+    // }  
+})->name('setauth');
+
+
+Route::get('milogout', function () {
+    Auth::logout();
+    return view('login');
+})->name('milogout');
+
+
+Route::get('/perfil', function () {
+    if(Auth::user()){
+        # code...
+        $miuser = User::find(Auth::user()->id);
+        $micliente = Cliente::where('user_id', Auth::user()->id)->first();
+        return view('perfil', compact('miuser', 'micliente'));
+    } else {
+        return view('login');
+    }    
+})->name('perfil');
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -90,6 +124,14 @@ Route::group(['prefix' => 'admin'], function () {
         return view('vendor.voyager.ventas.pago');
     })->name('ajax.ventas.pago');
     //ajax
+
+});
+
+// TAXI
+Route::group(['prefix' => 'taxi'], function () {
+    Route::get('nuevo', function () {
+        return view('taxi.nuevo'); 
+    })->name('taxi.nuevo');
 });
 
 //NEGOCIOS PRODUCTOS

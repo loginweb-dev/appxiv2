@@ -45,158 +45,166 @@
   </nav>
 </div>
 
-  @php
-    // $image=$producto->image ? $producto->image : setting('productos.img_default_producto');
-    $negocio= App\Negocio::find($producto->negocio_id);
-  @endphp
-      <div class="card mt-1">
-        <div class="row no-gutters">
-          <aside class="col-sm-5">
-            <article class="gallery-wrap"> 
-              <div class="img-wrap">
-                @if ($producto->nuevo)
-                  <span class="badge-new"> Nuevo </span>
-                @endif
-                @if ($producto->endescuento)
-                  <span class="badge-offer"><b> - {{ $producto->endescuento }}%</b></span>
-                @endif		
-                <img src="{{ ($producto->image!=null) ? Voyager::image($producto->thumbnail('cropped', 'image')) : asset('storage/'.setting('productos.img_default_producto')) }}" alt="{{$producto->nombre}}" width="100%">
-              </div>
-            </article>
-          </aside>
-          <aside class="col-sm-7">
-            <article class="p-1">
-              <h2 class="title mb-1 text-center mitext">{{$producto->nombre}}</h2>
-              <p class="mt-2 text-center">{{ $producto->detalle }}</p>
-                  {{-- Calificacion: --}}
-                  <div class="rating-wrap text-center">
-                    <ul class="rating-stars">
-                      <li style="width:{{ $producto->rating }}%" class="stars-active"> 
-                        <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-                        <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-                        <i class="fa fa-star"></i> 
-                      </li>
-                      <li>
-                        <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-                        <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-                        <i class="fa fa-star"></i> 
-                      </li>
-                    </ul>
-                    {{-- <div class="label-rating">132 reviews</div> --}}
-                    <div class="label-rating">{{ $producto->ordenes }}<i class="fa-solid fa-cart-arrow-down"></i></div>
-                    <div class="label-rating mititle">{{ $producto->categoria->nombre }}<i class="fa-solid fa-filter"></i></div>
-                  </div> 
-              <table class="table">
-                  <tr>
-                    @if ($negocio->tipo_id == 2)
-                        <tr>
-                          <td>
-                            Laboratorio:
-                            <p>{{ $producto->laboratorio->name }}</p>
-                          </td>
-                          <td>
-                            Etiqueta:
-                            <p>{{ $producto->etiqueta }}</p>
-                          </td>
-                        </tr>
-                    @endif
-
-                    <td width="50%">
-                      <div class="mb-1">
-                        @if ($producto->precio > 0)
-                          Precio Bs:
-                          <h2 class="mitext text-center">{{ number_format($producto->precio, 2, ',', '.') }}</h2>
-                        @else
-                          @php
-                            $rel=App\RelProductoPrecio::where('producto_id', $producto->id)->get();
-                          @endphp 
-                          Precios Bs:
-                          <select name="opciones_producto" id="opciones_producto" class="form-control">
-                              @foreach ($rel as $item2)
-                                @php
-                                  $precio_prod= App\Precio::find( $item2->precio_id);
-                                @endphp
-                                <option value="">{{ $precio_prod->nombre.' '.$precio_prod->precio }}</option>                    
-                              @endforeach
-                            </select>
-                        @endif
-                      </div> 
-                    </td>
-                    <td>
-                      Cantidad:
-                      <input class="form-control" type="number" id="cantidad_producto" min="1" value="1">
-                    </td>
-                  </tr>
-                    @if(count($producto->tallas) != 0)
-                        <tr>
-                          <td colspan="2">
-                            Tallas Disponibles:
-                            <br>
-                            @php
-                                $tallas = App\RelProductoTalla::where('producto_id', $producto->id)->with('tallas')->get();
-                            @endphp
-                            <select name="" id="" class="form-control">
-                              @foreach ($tallas as $value)
-                                <option value="{{ $value->id }}">{{ $value->tallas->nombre }}</option>   
-                              @endforeach
-                          </select>
-                          </td>
-                        </tr>
-                    @endif
-                    @if ($producto->extra)  
+    @php
+      $negocio= App\Negocio::find($producto->negocio_id);
+    @endphp
+    <div class="card mt-1">
+      <div class="row no-gutters">
+        <aside class="col-sm-5">
+          <article class="gallery-wrap"> 
+            <div class="img-wrap">
+              @if ($producto->nuevo)
+                <span class="badge-new"> Nuevo </span>
+              @endif
+              @if ($producto->endescuento)
+                <span class="badge-offer"><b> - {{ $producto->endescuento }}%</b></span>
+              @endif		
+              <img src="{{ ($producto->image!=null) ? Voyager::image($producto->thumbnail('cropped', 'image')) : asset('storage/'.setting('productos.img_default_producto')) }}" alt="{{$producto->nombre}}" width="100%">
+            </div>
+          </article>
+        </aside>
+        <aside class="col-sm-7">
+          <article class="p-1">
+            <h2 class="title mb-1 text-center mititle">{{$producto->nombre}}</h2>
+            <p class="mt-2 text-center">{{ $producto->detalle }}</p>
+                <div class="rating-wrap text-center">
+                  <ul class="rating-stars">
+                    <li style="width:{{ $producto->rating }}%" class="stars-active"> 
+                      <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
+                      <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
+                      <i class="fa fa-star"></i> 
+                    </li>
+                    <li>
+                      <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
+                      <i class="fa fa-star"></i> <i class="fa fa-star"></i> 
+                      <i class="fa fa-star"></i> 
+                    </li>
+                  </ul>
+                  {{-- <div class="label-rating">132 reviews</div> --}}
+                  <div class="label-rating">{{ $producto->ordenes }}<i class="fa-solid fa-cart-arrow-down"></i></div>
+                  <div class="label-rating mititle">{{ $producto->categoria->nombre }}<i class="fa-solid fa-filter"></i></div>
+                </div> 
+            <table class="table">
+                <tr>
+                  @if ($negocio->tipo_id == 2)
                       <tr>
-                        <td colspan="2">
-                          <strong>Extras: </strong> Armala como te gusta..!:
-                          <br>
-                          @php
-                              $extras = App\Extraproducto::where('negocio_id', $negocio->id)->get();
-                          @endphp
-                          <div class="input-group-append">
-                            <input class="form-control" id="texto_extras" type="text" readonly>
-                            <button   class="btn btn-sm miboton" id="button_extras"  data-toggle="modal" data-target="#modal-lista_extras" onclick="addextra('{{$producto->negocio_id}}','{{$producto->id}}')"> <i class="fa fa-plus-square-o"></i></button>
-                          </div>
-                          <input id="subtotal_extras" readonly type="number"  value="0" hidden>
-                          <p style="text-align: justify; font-size: 11px;">Si desea agregar extras distintos a cada producto, agréguelos al carrito individualmente porfavor, esto es para distinguir que extras van en cada producto.</p>
+                        <td>
+                          Laboratorio:
+                          <p>{{ $producto->laboratorio->name }}</p>
+                        </td>
+                        <td>
+                          Etiqueta:
+                          <p>{{ $producto->etiqueta }}</p>
                         </td>
                       </tr>
-                    @else
-                      <input id="subtotal_extras" readonly type="number"  value="0" hidden>
-                    @endif
-                  <tr>        
-                    <td>
-                      Total Bs:
-                      <div id="total_producto"></div>
-                      <input readonly id="subtotal_producto" type="number" hidden>
-                      <input id="precio_producto" type="number" hidden>
-                    </td>   
-                    <td>
-                      <br>
-                      <a onclick="agregar_carrito('{{$producto->id}}')" class="btn  miboton"> <i class="fas fa-shopping-cart"></i> Agregar a Carrito </a>
-                    </td>        
-                  </tr>
-              </table>
-              
-            </article> 
-          </aside>
-        </div> 
+                  @endif
+
+                  <td width="50%">
+                    <div class="mb-1">
+                      @if ($producto->precio > 0)
+                        Precio Bs:
+                        <h2 class="mitext text-center">{{ number_format($producto->precio, 2, ',', '.') }}</h2>
+                        {{-- <select name="precio_rest" id="precio_rest" class="form-control">
+                          @for ($i = 0; $i < 6; $i++)
+                            <option value="{{ $i }}">{{ $i }}</option>   
+                          @endfor
+                        </select> --}}
+                      @else
+                        @php
+                          $rel=App\RelProductoPrecio::where('producto_id', $producto->id)->get();
+                        @endphp 
+                        Precios Bs:
+                        <select name="opciones_producto" id="opciones_producto" class="form-control"></select>
+                      @endif
+                    </div> 
+                  </td>
+                  <td>
+                    Cantidad:
+                    {{-- <input class="form-control" type="number" id="cantidad_producto" min="1" value="1"> --}}
+                    <select name="precio_rest" id="precio_rest" class="form-control">
+                      @for ($i = 1; $i < 7; $i++)
+                        <option value="{{ $i }}">Cant: {{ $i }} @if($producto->extra && $i == 1)+ Extras @endif</option>   
+                      @endfor
+                    </select>
+                  </td>
+                </tr>
+                  @if(count($producto->tallas) != 0)
+                      <tr>
+                        <td colspan="2">
+                          Tallas Disponibles:
+                          <br>
+                          @php
+                              $tallas = App\RelProductoTalla::where('producto_id', $producto->id)->with('tallas')->get();
+                          @endphp
+                          <select name="" id="" class="form-control">
+                            @foreach ($tallas as $value)
+                              <option value="{{ $value->id }}">{{ $value->tallas->nombre }}</option>   
+                            @endforeach
+                        </select>
+                        </td>
+                      </tr>
+                  @endif
+                  @if ($producto->extra)  
+                    <tr>
+                      <td colspan="2">
+                        <strong>Extras: </strong> Armala como te gusta..!:
+                        @php
+                            $extras = App\Extraproducto::where('negocio_id', $negocio->id)->get();
+                        @endphp
+                        <br>
+    
+                        {{-- <div class="input-group-append">
+                          <input class="form-control" id="texto_extras" type="text" readonly>
+                          <button   class="btn btn-sm miboton" id="button_extras"  data-toggle="modal" data-target="#modal-lista_extras" onclick="addextra('{{$producto->negocio_id}}','{{$producto->id}}')"> <i class="fa fa-plus-square-o"></i></button>
+                        </div>
+                        <input id="subtotal_extras" readonly type="number"  value="0" hidden> --}}
+                        <select name="" id="" class="form-control" multiple>
+                          @foreach ($extras as $item)
+                              <option value="{{ $item->id }}">{{ $item->nombre.' '.$item->precio }} Bs</option>
+                          @endforeach
+                        </select>
+                        <p style="text-align: justify; font-size: 11px;">Si desea agregar extras distintos a cada producto, agréguelos al carrito individualmente porfavor, esto es para distinguir que extras van en cada producto.</p>
+                      </td>
+                    </tr>
+                  @else
+                    <input id="subtotal_extras" readonly type="number"  value="0" hidden>
+                  @endif
+                <tr>        
+                  <td>
+                    Total Bs:
+                    <div id="total_producto"></div>
+                    <input readonly id="subtotal_producto" type="number" hidden>
+                    <input id="precio_producto" type="number" hidden>
+                  </td>   
+                  <td>
+                    <br>
+                    <a onclick="agregar_carrito('{{ $producto->id }}')" class="btn  miboton"> <i class="fas fa-shopping-cart"></i> Agregar a Carrito </a>
+                  </td>        
+                </tr>
+            </table>              
+          </article> 
+        </aside>
       </div> 
-
-  <h4 class="p-2">Te pueden interesar</h4>
-  <div class="slick-slider" data-slick='{"slidesToShow": 3, "slidesToScroll": 1}'>
-    @foreach ($productos as $item)
-    <a href="{{ route('producto', [$negocio->slug, $item->slug]) }}">
-      <div class="item-slide p-1">
-        <figure class="card card-product">
-          <div class="img-wrap"> <img src="{{ ($item->image!=null) ? Voyager::image($item->thumbnail('cropped', 'image')) : Voyager::image(setting('productos.img_default_producto')) }}"> </div>
-          <figcaption class="info-wrap text-center">
-            <h6 class="title text-truncate mititle">{{ $item->nombre }}</h6>
-          </figcaption>
-        </figure>
-      </div>
-    </a>
-    @endforeach
-  </div>
-
+    </div> 
+    <h4 class="mitext text-center">Te pueden interesar</h4>
+    <div class="container-fluid">       
+        <div class="col-sm-12">            
+          <div class="slick-slider" data-slick='{"slidesToShow": 3, "slidesToScroll": 3}'>
+            @foreach ($productos as $item)
+              <a href="{{ route('producto', [$negocio->slug, $item->slug]) }}">
+                <div class="item-slide p-1">
+                  <figure class="card card-product">
+                    <div class="img-wrap"> <img src="{{ ($item->image!=null) ? Voyager::image($item->thumbnail('cropped', 'image')) : Voyager::image(setting('productos.img_default_producto')) }}"> </div>
+                    {{-- <figcaption class="info-wrap text-center"> --}}
+                      <h6 class="mititle text-truncate">{{ $item->nombre }}</h6>
+                    {{-- </figcaption> --}}
+                  </figure>
+                </div>
+              </a>
+            @endforeach
+          </div>
+        </div>
+    </div>
 
   <div class="fb-comments" data-href="{{ route('producto',[$negocio->slug, $producto->slug]) }}" data-width="100%" data-numposts="5"></div>
 
@@ -240,12 +248,12 @@
 	$(document).ready( function(){
 		// addextra('{{$producto->negocio_id}}' , '{{$producto->id}}')
     $('#precio_producto').val('{{$producto->precio}}')  
-		totales()
+		
 		localStorage.setItem('extras', JSON.stringify([]));
 		localidad_validacion()
     extras()
     opciones()
-   
+    totales()
 	});
   async function extras(){
     var condicion ='{{$producto->extra}}'
@@ -417,96 +425,101 @@
     });
 
 	async function agregar_carrito(id) {
-    misession = JSON.parse(localStorage.getItem('misession'))
+    var misession = JSON.parse(localStorage.getItem('misession'))
+    // return misession
+    console.log(misession.data.chatbot_id)
     if (misession) {
-      
+        console.log(true)
+        // await axios.post('')
+        await axios.post("https://delivery-chatbot.appxi.net/message", {
+          phone: misession.data.chatbot_id,
+          message: 'producto agregado'
+        })
+        console.log('mierda')
     } else {
-      location.href = '/login'
+      location.href = '/perfil'
+      console.log(false)
     }
+    //   var producto= await axios("{{setting('admin.url')}}api/producto/"+id)
+    //   var user = JSON.parse(localStorage.getItem('misession'));
+    //   var telefono ='591'+user.phone+'@c.us'
+    //   var nombre = user.name
+    //   var localidad= user.localidad.id
+    //   var precio =0;
+    //   var product_name=""
+    //   if (producto.data.precio==0) {
+    //     var aux_precio= await axios("{{setting('admin.url')}}api/precio/"+$('#opciones_producto').val())
+    //     product_name=producto.data.nombre+" "+aux_precio.data.nombre
+    //     precio= aux_precio.data.precio
+    //   } else {
+    //     precio=producto.data.precio
+    //     product_name=producto.data.nombre
+    //   }
+    //   var cliente= await axios("{{setting('admin.url')}}api/cliente/"+telefono)
+    //   if (cliente.data.poblacion_id) {
+    //   }
+    //   else{
+    //     var midata={
+    //       id:cliente.data.id,
+    //       nombre:nombre,
+    //     }
+    //     await axios.post("{{setting('admin.url')}}api/cliente/update/nombre", midata)
+    //     var midata={
+    //       id:cliente.data.id,
+    //       poblacion_id:localidad,
+    //     }
+    //     await axios.post("{{setting('admin.url')}}api/cliente/update/localidad", midata)
+    //   }
+    //   var data={
+    //     product_id: id,
+    //     product_name: product_name,
+    //     chatbot_id: telefono,
+    //     precio: precio,
+    //     cantidad: parseInt($('#cantidad_producto').val()),
+    //     negocio_id: producto.data.negocio.id,
+    //     negocio_name: producto.data.negocio.nombre
+    //   }
+    //   var carrito= await axios.post("{{setting('admin.url')}}api/chatbot/cart/add", data)
+	  // var extras = JSON.parse(localStorage.getItem('extras'));
+	  //   if (extras.idprod) {
+    //   for (let index = 0; index < extras.idprod.length; index++) {
+    //     var midata={
+    //       extra_id:extras.idprod[index],
+    //       precio:extras.precio[index],
+    //       cantidad:extras.cantidad[index],
+    //       total:parseFloat(extras.precio[index])*parseFloat(extras.cantidad[index]),
+    //       carrito_id:carrito.data.id,
+    //       producto_id:id
+    //     }
+    //     await axios.post("{{setting('admin.url')}}api/carrito/add/extras", midata)			
+    //   }
+    //   $('#cantidad_producto').val(1)
+    //   localStorage.setItem('extras', JSON.stringify([]));
+    //   $('#subtotal_extras').val(0)
+    //   $('#texto_extras').val("")
+    //   totales()
 
-
-      var producto= await axios("{{setting('admin.url')}}api/producto/"+id)
-      var user = JSON.parse(localStorage.getItem('misession'));
-      var telefono ='591'+user.phone+'@c.us'
-      var nombre = user.name
-      var localidad= user.localidad.id
-      var precio =0;
-      var product_name=""
-      if (producto.data.precio==0) {
-        var aux_precio= await axios("{{setting('admin.url')}}api/precio/"+$('#opciones_producto').val())
-        product_name=producto.data.nombre+" "+aux_precio.data.nombre
-        precio= aux_precio.data.precio
-      } else {
-        precio=producto.data.precio
-        product_name=producto.data.nombre
-      }
-      var cliente= await axios("{{setting('admin.url')}}api/cliente/"+telefono)
-      if (cliente.data.poblacion_id) {
-      }
-      else{
-        var midata={
-          id:cliente.data.id,
-          nombre:nombre,
-        }
-        await axios.post("{{setting('admin.url')}}api/cliente/update/nombre", midata)
-        var midata={
-          id:cliente.data.id,
-          poblacion_id:localidad,
-        }
-        await axios.post("{{setting('admin.url')}}api/cliente/update/localidad", midata)
-      }
-      var data={
-        product_id: id,
-        product_name: product_name,
-        chatbot_id: telefono,
-        precio: precio,
-        cantidad: parseInt($('#cantidad_producto').val()),
-        negocio_id: producto.data.negocio.id,
-        negocio_name: producto.data.negocio.nombre
-      }
-      var carrito= await axios.post("{{setting('admin.url')}}api/chatbot/cart/add", data)
-	  var extras = JSON.parse(localStorage.getItem('extras'));
-	  if (extras.idprod) {
-		for (let index = 0; index < extras.idprod.length; index++) {
-			var midata={
-				extra_id:extras.idprod[index],
-				precio:extras.precio[index],
-				cantidad:extras.cantidad[index],
-				total:parseFloat(extras.precio[index])*parseFloat(extras.cantidad[index]),
-				carrito_id:carrito.data.id,
-				producto_id:id
-			}
-			await axios.post("{{setting('admin.url')}}api/carrito/add/extras", midata)			
-		}
-    $('#cantidad_producto').val(1)
-		localStorage.setItem('extras', JSON.stringify([]));
-    $('#subtotal_extras').val(0)
-    $('#texto_extras').val("")
-    totales()
-
-	  }
-      if (carrito.data) {
-        var list = '*🎉 Producto agregado a tu carrito 🎉*\n'
-        list += 'Si deseas agregar mas productos a tu carrito visita el mismo u otros negocios (A).\n'
-        list += '------------------------------------------\n'
-        list += '*A* .- PEDIR AHORA\n'
-        list += '*B* .- SEGUIR COMPRANDO\n'
-        // list += '*C* .- VER TU CARRITO\n'
-        list += '------------------------------------------\n'
-        list += 'ENVIA UNA OPCION ejemplo: A o B'
+    //   }
+    //   if (carrito.data) {
+    //     var list = '*🎉 Producto agregado a tu carrito 🎉*\n'
+    //     list += 'Si deseas agregar mas productos a tu carrito visita el mismo u otros negocios (A).\n'
+    //     list += '------------------------------------------\n'
+    //     list += '*A* .- PEDIR AHORA\n'
+    //     list += '*B* .- SEGUIR COMPRANDO\n'
+    //     list += '------------------------------------------\n'
+    //     list += 'ENVIA UNA OPCION ejemplo: A o B'
         
-        //Mensaje a Cliente
-        pb.info(
-          'Producto Agregado a Carrito Exitosamente, debes terminar el Pedido en WhatsApp o puedes seguir añadiendo más productos a tu Carrito.'
-        );
-        // toastr.succes("Producto Agregado a Carrito Exitosamente, debes terminar el Pedido en WhatsApp o puedes seguir añadiendo más productos a tu Carrito.")
-        var data={
-          message:list,
-          phone:telefono,
-          status:1.1
-        }
-        await axios.post("{{setting('admin.chatbot_url_clientes')}}cart", data)
-      }
+    //     //Mensaje a Cliente
+    //     pb.info(
+    //       'Producto Agregado a Carrito Exitosamente, debes terminar el Pedido en WhatsApp o puedes seguir añadiendo más productos a tu Carrito.'
+    //     );
+    //     var data={
+    //       message:list,
+    //       phone:telefono,
+    //       status:1.1
+    //     }
+    //     await axios.post("{{setting('admin.chatbot_url_clientes')}}cart", data)
+    //   }
     }
 
   async function opciones(){
@@ -517,10 +530,10 @@
       $('#opciones_producto').find('option').remove().end();
       var table= await axios("{{setting('admin.url')}}api/rel/precios/producto/"+id)
       //console.log(table.data)
-      $('#opciones_producto').append($('<option>', {
-          value: null,
-          text: 'Elige una Opción'
-      }));
+      // $('#opciones_producto').append($('<option>', {
+      //     value: null,
+      //     text: 'Elige una Opción'
+      // }));
       for (let index = 0; index < table.data.length; index++) {
           $('#opciones_producto').append($('<option>', {
               value: table.data[index].precios.id,

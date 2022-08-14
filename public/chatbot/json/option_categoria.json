@@ -1,0 +1,30 @@
+{
+    "59170269362@c.us": [
+        {
+            "option": "A",
+            "categoria": {
+                "id": 140,
+                "created_at": "2022-08-11T12:34:56.000000Z",
+                "updated_at": "2022-08-11T12:34:56.000000Z",
+                "deleted_at": null,
+                "nombre": "Sabores Clasicos",
+                "tipo_id": 1,
+                "published": "hace 1 día",
+                "fecha": "2022-08-11"
+            }
+        },
+        {
+            "option": "B",
+            "categoria": {
+                "id": 141,
+                "created_at": "2022-08-11T12:35:10.000000Z",
+                "updated_at": "2022-08-11T12:35:10.000000Z",
+                "deleted_at": null,
+                "nombre": "Sabores Especiales",
+                "tipo_id": 1,
+                "published": "hace 1 día",
+                "fecha": "2022-08-11"
+            }
+        }
+    ]
+}

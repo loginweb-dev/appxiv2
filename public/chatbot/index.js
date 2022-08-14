@@ -10,7 +10,8 @@ var shortUrl = require("node-url-shortener")
 // const socket = io("https://socket.appxi.net");
 
 const JSONdb = require('simple-json-db');
-const option_categoria= new JSONdb('json/option_categoria');
+const option_categoria= new JSONdb('json/option_categoria.json');
+const producto_buscado= new JSONdb('json/producto_buscado.json');
 const negocios = new JSONdb('json/negocios.json');
 const categorias = new JSONdb('json/categorias.json');
 const productos = new JSONdb('json/productos.json');
@@ -81,10 +82,10 @@ client.on('message', async msg => {
                 if (msg.body === 'reset') {
                     status.set(msg.from, 0.6)
                     await axios.post(process.env.APP_URL+'api/chatbot/cart/clean', {chatbot_id: msg.from})                    
-                    var mitipos = await axios(process.env.APP_URL+'api/tipo/negocios')
-                    for (let index = 0; index < mitipos.data.length; index++) {
-                        tipos.set('A'+mitipos.data[index].id, mitipos.data[index].id);
-                    }
+                    // var mitipos = await axios(process.env.APP_URL+'api/tipo/negocios')
+                    // for (let index = 0; index < mitipos.data.length; index++) {
+                    //     tipos.set('A'+mitipos.data[index].id, mitipos.data[index].id);
+                    // }
                     // await axios.post(process.env.ACHATBOT_URL+'update', {
                     //     phone: '59170269362@c.us',
                     //     status: 3
@@ -93,18 +94,18 @@ client.on('message', async msg => {
                 if (msg.body.toUpperCase() === 'MENU') {
                     status.set(msg.from, 0.6)
                     // await axios.post(process.env.APP_URL+'api/chatbot/cart/clean', {chatbot_id: msg.from})                    
-                    var mitipos = await axios(process.env.APP_URL+'api/tipo/negocios')
-                    for (let index = 0; index < mitipos.data.length; index++) {
-                        tipos.set('A'+mitipos.data[index].id, mitipos.data[index].id);
-                    }
+                    // var mitipos = await axios(process.env.APP_URL+'api/tipo/negocios')
+                    // for (let index = 0; index < mitipos.data.length; index++) {
+                    //     tipos.set('A'+mitipos.data[index].id, mitipos.data[index].id);
+                    // }
                 }
                 if (msg.body.toUpperCase() === 'CLEAN') {
                     status.set(msg.from, 0.6)
-                    await axios.post(process.env.APP_URL+'api/chatbot/cart/clean', {chatbot_id: msg.from})                    
-                    var mitipos = await axios(process.env.APP_URL+'api/tipo/negocios')
-                    for (let index = 0; index < mitipos.data.length; index++) {
-                        tipos.set('A'+mitipos.data[index].id, mitipos.data[index].id);
-                    }
+                    // await axios.post(process.env.APP_URL+'api/chatbot/cart/clean', {chatbot_id: msg.from})                    
+                    // var mitipos = await axios(process.env.APP_URL+'api/tipo/negocios')
+                    // for (let index = 0; index < mitipos.data.length; index++) {
+                    //     tipos.set('A'+mitipos.data[index].id, mitipos.data[index].id);
+                    // }
                 }                                  
                 switch (status.get(msg.from)) {
                     case 0: //estado inicial
@@ -131,6 +132,59 @@ client.on('message', async msg => {
                                     client.sendMessage(msg.from, 'Envía una opción válida')
                                 }
                                 break;
+                        }
+                        break;
+                    case 0.89:
+                        var validar = false
+                        var miproductos= producto_buscado.get(msg.from)
+                        for (let index = 0; index < miproductos.length; index++) {
+                            if (miproductos[index].option === msg.body.toUpperCase()) {
+                                validar = true
+                                productos.set(msg.from, miproductos[index].producto)
+                                break;
+                            }
+                        }
+                        if (validar) {
+                            var media = ''
+                            var miprecios = []
+                            var miproducto = await axios(process.env.APP_URL+'api/producto/'+productos.get(msg.from).id)
+                            if (miproducto.data.image) {
+                                media = MessageMedia.fromFilePath('../../storage/app/public/'+miproducto.data.image)
+                            } else {
+                                media = MessageMedia.fromFilePath('imgs/default.png')
+                            }
+                            if (miproducto.data.precio != 0) {                                                    
+                                var list = miproducto.data.nombre+' '+miproducto.data.precio+'Bs.\n'
+                                list += miproducto.data.detalle+'\n'
+                                list += '--------------------------\n'
+                                list += '*A* .- Añadir a carrito\n'
+                                list += '*B* .- Seguir comprando\n'
+                                list += 'Envía una opción ejemplo: *A*'
+                                status.set(msg.from, 0.3)
+                                miprecios=miproducto.data.precio
+                                client.sendMessage(msg.from, media, {caption: list})                                                    
+                            } else {                                 
+                                var list = miproducto.data.nombre+'\n'
+                                list += miproducto.data.detalle+'\n'
+                                list += '--------------------------'+'\n'
+                                for (let index = 0; index < miproducto.data.precios.length; index++) {
+                                    var precio = await axios(process.env.APP_URL+'api/precio/'+miproducto.data.precios[index].precio_id)
+                                    list += '*'+mioption[index]+'* .- '+precio.data.nombre+' '+precio.data.precio+'Bs.\n'
+                                    miprecios.push({opcion: mioption[index], precio: precio.data.precio})
+                                }                                                    
+                                list += 'Envía una opción '
+                                status.set(msg.from, 0.4)
+                                client.sendMessage(msg.from, media, {caption: list})                                                    
+                            }
+                            if (miproducto.data.extra) {
+                                var miextras = await axios(process.env.APP_URL+'api/producto/extra/negocio/'+miproducto.data.negocio_id)
+                                carts.set(msg.from, {id: miproducto.data.id, nombre: miproducto.data.nombre, precio: miprecios, extra: miextras.data, negocio_id: miproducto.data.negocio_id, negocio_nombre: miproducto.data.negocio.nombre})
+                            }else{
+                                carts.set(msg.from, {id: miproducto.data.id, nombre: miproducto.data.nombre, precio: miprecios, extra: false, negocio_id: miproducto.data.negocio_id, negocio_nombre: miproducto.data.negocio.nombre})
+                            }
+                        }
+                        else{
+                            client.sendMessage(msg.from, 'Envía una opción válida')
                         }
                         break;
                     case 0.9: 
@@ -180,12 +234,37 @@ client.on('message', async msg => {
                             }
                             if (miproducto.data.extra) {
                                 var miextras = await axios(process.env.APP_URL+'api/producto/extra/negocio/'+miproducto.data.negocio_id)
-                                carts.set(msg.from, {id: miproducto.id, nombre: miproducto.data.nombre, precio: miprecios, extra: miextras.data, negocio_id: miproducto.data.negocio_id, negocio_nombre: miproducto.data.negocio.nombre})
+                                carts.set(msg.from, {id: miproducto.data.id, nombre: miproducto.data.nombre, precio: miprecios, extra: miextras.data, negocio_id: miproducto.data.negocio_id, negocio_nombre: miproducto.data.negocio.nombre})
                             }else{
-                                carts.set(msg.from, {id: miproducto.id, nombre: miproducto.data.nombre, precio: miprecios, extra: false, negocio_id: miproducto.negocio_id, negocio_nombre: miproducto.data.negocio.nombre})
+                                carts.set(msg.from, {id: miproducto.data.id, nombre: miproducto.data.nombre, precio: miprecios, extra: false, negocio_id: miproducto.data.negocio_id, negocio_nombre: miproducto.data.negocio.nombre})
                             }
                         } else {
                             client.sendMessage(msg.from, 'Envía una opción válida')
+                        }
+                        break;
+                    case 0.79:
+                        if ((msg.body.toUpperCase()!= 'MENU') && (msg.body.toUpperCase()!= 'CLEAN') && (msg.body.toUpperCase()!= 'RESET')) {
+                            var prod_buscar= msg.body.toUpperCase()
+                            var minegocio = negocios.get(msg.from)
+                            var resultado= await axios.post(process.env.APP_URL+'api/search/producto/negocio/chatbot', {
+                                negocio_id: minegocio.id,
+                                criterio: prod_buscar
+                            })
+                            if (resultado.data.length>0) {
+                                var vector=[]
+                                var list = '*Productos Disponibles*\n'
+                                for (let index = 0; index < resultado.data.length; index++) {
+                                    list += '*'+mioption[index]+'* .- '+resultado.data[index].nombre+'\n'
+                                    vector.push({option: mioption[index], producto:resultado.data[index]})
+                                }
+                                list += 'Envía una opción ejemplo: *A*'
+                                status.set(msg.from, 0.89)
+                                producto_buscado.set(msg.from, vector)
+                                client.sendMessage(msg.from, list) 
+                            }
+                            else{
+                                client.sendMessage(msg.from, 'No se encontraron productos relacionados.')
+                            }
                         }
                         break;
                     case 0.8: //listar productos segun categorias
@@ -239,6 +318,58 @@ client.on('message', async msg => {
                             client.sendMessage(msg.from, 'Envía una opción válida')
                         }
                         break;
+                    case 0.69:
+                        var validar = false
+                        var mitipo = tipos.get(msg.from)
+                        var miresponse = await axios.post(process.env.APP_URL+'api/negocios/by/tipo', {
+                            localidad: micliente.data.poblacion_id,
+                            tipo: mitipo.id
+                        })
+                        for (let index = 0; index < miresponse.data.length; index++) {
+                            if (mioption[index] === msg.body.toUpperCase()) {
+                                validar = true
+                                negocios.set(msg.from, miresponse.data[index])
+                                break;
+                            }
+                        }
+                        if (validar) {
+                            var minegocio = negocios.get(msg.from)
+                            var mitipo = tipos.get(msg.from)
+                            var misproductos = await axios(process.env.APP_URL+'api/productos/negocio/rank/'+minegocio.id)
+                            if (micliente.data.poblacion_id== minegocio.poblacion_id) {
+                                var miestado = (minegocio.estado == 1) ? 'Abierto' : 'Cerrado'
+                                var list = '*'+minegocio.nombre.toUpperCase()+'*\n'
+                                list += '*Estado:* '+miestado+'\n'
+                                list += '*Horario:* '+minegocio.horario+'\n'
+                                list += '*Dirección:* '+minegocio.direccion+'\n'
+                                list += '*Tipo:* '+mitipo.nombre+'\n'
+                                list += '----------------------------------'+'\n'
+                                list += 'Envía el nombre, detalle, u otra descripción del producto para buscarlo.\n'
+                                list += 'Ejemplo: *Producto X*\n' 
+                                list += '----------------------------------'+'\n'
+                                list += '*MENU*.- Regresar al Menú Principal.\n'
+                                list += '----------------------------------'+'\n'
+                                list += '*Nuestra tienda en línea en:*\n'
+                                list += minegocio.link
+                                var mimedia = minegocio.logo ? MessageMedia.fromFilePath('../../storage/app/public/'+minegocio.logo) : MessageMedia.fromFilePath('imgs/mitienda.png')
+                                status.set(msg.from, 0.79)
+                                client.sendMessage(msg.from, mimedia, {caption: list})                                
+                            }
+                            else{
+                                client.sendMessage(msg.from, '📍 El negocio solicitado no se encuentra en tu Localidad 📍')
+                            }           
+                        } else {
+                            client.sendMessage(msg.from, 'Envía una opción válida')
+                        }
+                        break;
+                    case 0.691:
+                        //Opcion A: Listar los Últimos Productos Vendidos
+                        // var minegocio = negocios.get(msg.from)
+                        // var misproductos = await axios(process.env.APP_URL+'api/productos/negocio/rank/'+minegocio.id)
+                        //Opcion B: Buscar un Producto 
+                        // list += 'Envía el nombre, detalle, u otra descripción del producto para buscarlo.\n'
+                        // list += 'Ejemplo: *Producto X*\n' 
+                        break;
                     case 0.7:
                         var validar = false
                         var mitipo = tipos.get(msg.from)
@@ -261,7 +392,7 @@ client.on('message', async msg => {
                                 var list = '*'+minegocio.nombre.toUpperCase()+'*\n'
                                 list += '*Estado:* '+miestado+'\n'
                                 list += '*Horario:* '+minegocio.horario+'\n'
-                                list += '*Direccion:* '+minegocio.direccion+'\n'
+                                list += '*Dirección:* '+minegocio.direccion+'\n'
                                 list += '*Tipo:* '+mitipo.nombre+'\n'
                                 list += '----------------------------------'+'\n'
                                 list += '*Catálogo*\n'
@@ -310,20 +441,35 @@ client.on('message', async msg => {
                                 localidad: micliente.data.poblacion_id,
                                 tipo: mitipo.id
                             })
-                            var list = '*🏚️ NEGOCIOS ('+mitipo.nombre+') 🏚️* \n'+micliente.data.localidad.nombre+'\n'
-                            list += '----------------------------------\n'
-                            for (let index = 0; index < miresponse.data.length; index++) {
-                                list += '*'+mioption[index]+'* .- '+miresponse.data[index].nombre+'\n'                                    
+                            if (miresponse.data.length>0 || mitipo.id==6) {
+                                var list = '*🏚️ NEGOCIOS ('+mitipo.nombre+') 🏚️* \n'+micliente.data.localidad.nombre+'\n'
+                                list += '----------------------------------\n'
+                                for (let index = 0; index < miresponse.data.length; index++) {
+                                    list += '*'+mioption[index]+'* .- '+miresponse.data[index].nombre+'\n'                                    
+                                }
+                                list += 'Envía una opción ejemplo: *A* \n'
+                                list += '----------------------------------\n'
+                                list += '*MENU*.- Regresar al Menú Principal.\n'
+                                list += '----------------------------------\n'
+                                list += 'Visita nuestro marketplace en:\n'
+                                list += process.env.APP_URL
+                                if (mitipo.id==1) {
+                                    status.set(msg.from, 0.7)
+                                    client.sendMessage(msg.from, list)
+                                }
+                                else if(mitipo.id!= 1 && mitipo.id!=6){
+                                    status.set(msg.from, 0.69)
+                                    client.sendMessage(msg.from, list)
+                                }
+                                else if(mitipo.id==6){
+                                    client.sendMessage(msg.from, 'En Desarrollo, próximamente disponible')
+                                }
                             }
-                            list += 'Envía una opción ejemplo: *A* \n'
-                            list += '----------------------------------\n'
-                            list += '*MENU*.- Regresar al Menú Principal.\n'
-                            list += '----------------------------------\n'
-                            list += 'Visita nuestro marketplace en:\n'
-                            list += process.env.APP_URL
-                            client.sendMessage(msg.from, list)
-                            status.set(msg.from, 0.7)
-                        } else {
+                            else{
+                                client.sendMessage(msg.from, 'No hay Negocios disponibles de tipo: *'+mitipo.nombre+'* en su localidad.')
+                            }
+                        } 
+                        else {
                             client.sendMessage(msg.from, 'Envía una opción válida')
                             menu_principal(micliente, msg.from)
                         }
@@ -367,11 +513,15 @@ client.on('message', async msg => {
                                 list += 'Envía una opción'
                                 client.sendMessage(msg.from, list)
                                 status.set(msg.from, 0.5)
-                            } else if (msg.body === 'b' || msg.body === 'B') {
-                                client.sendMessage(msg.from, 'Genial, ingresa una cantidad (1-9) para agregar el producto: *'+miproducto.nombre+'*')
-                                status.set(msg.from, 1)
-                            }else{
-                                client.sendMessage(msg.from, 'Envía una opción válida')
+                             } //else if (msg.body === 'b' || msg.body === 'B') {
+                            //     client.sendMessage(msg.from, 'Genial, ingresa una cantidad (1-9) para agregar el producto: *'+miproducto.nombre+'*')
+                            //     status.set(msg.from, 1)
+                            // }else{
+                            //     client.sendMessage(msg.from, 'Envía una opción válida')
+                            // }
+                            else{
+                                client.sendMessage(msg.from, 'Genial, ingresa una cantidad (1-9) para agregar el producto: *'+miproducto.data.nombre+'*')
+                                status.set(msg.from, 1)                            
                             }                                    
                         }else if (msg.body === 'B' || msg.body === 'b') {
                             menu_principal(micliente, msg.from)
@@ -865,6 +1015,53 @@ client.on('message', async msg => {
 
 app.get('/', async (req, res) => {
     res.render('index', {count: micount, wweb: miwweb});
+});
+
+app.post('/getpin', async (req, res) => {
+    var phone= '591'+req.body.phone+'@c.us'
+    var micliente = await axios(process.env.APP_URL+'api/cliente/'+phone)
+    await axios.post(process.env.APP_URL+'api/cliente/update/nombre', {
+        id: micliente.data.id,
+        nombre: req.body.nombre,
+    })
+    await axios.post(process.env.APP_URL+'api/cliente/update/localidad', {
+        id: micliente.data.id,
+        poblacion_id: req.body.localidad
+    })
+
+    var newpassword=Math.random().toString().substring(2, 6)
+    await axios.post(process.env.APP_URL+'api/cliente/update/pin', {
+        id:micliente.data.id,
+        newpassword:newpassword
+    })
+    micliente = await axios(process.env.APP_URL+'api/cliente/'+phone)
+    message = 'Hola, *'+micliente.data.nombre+'* soy el 🤖CHATBOT🤖 de: *'+process.env.APP_NAME+'* tu asistente digital en ventas y viajes, visita tu comercio o taxi preferido.\n'
+    message += '----------------------------------\n'
+    message +='Tu Pin para confirmar tu identidad es: *'+newpassword+'*\n'
+    message += '----------------------------------\n'
+    message += 'Visita nuestro marketplace en:\n'
+    message += process.env.APP_URL
+    client.sendMessage(phone, message)       
+    res.send('Mensaje Enviado') 
+});
+
+app.post('/setpin', async (req, res) => {
+    var miphone= '591'+req.body.phone +'@c.us'
+    var validar = await axios.post(process.env.APP_URL+'api/app/setauth', {
+        phone: miphone,
+        pin: req.body.pin
+    })
+    console.log(validar.data.user)
+    if (!validar.data.message) {        
+        client.sendMessage(miphone, 'Felicidades, Credenciales Correctas')       
+        console.log(validar.data.user)
+        res.send(validar.data)
+
+    }
+    else{        
+        client.sendMessage(miphone, 'Error, Credenciales Inorrectas')       
+        res.send(false)
+    }
 });
 
 app.post('/cart', async (req, res) => {

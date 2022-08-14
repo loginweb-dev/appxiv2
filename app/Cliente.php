@@ -17,7 +17,9 @@ class Cliente extends Model
         'longitud',
         'chatbot_id',
 		    'chatbot_status',
-        'poblacion_id'
+        'poblacion_id',
+        'pin',
+        'user_id'
     ];
 
     protected $appends=['published', 'fecha'];
@@ -39,5 +41,9 @@ class Cliente extends Model
     public function localidad()
     {
         return $this->belongsTo(Poblacione::class, 'poblacion_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(\TCG\Voyager\Models\User::class, 'user_id');
     }
 }

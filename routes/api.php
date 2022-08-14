@@ -27,6 +27,7 @@ use App\Precio;
 use App\RelProductoPrecio;
 use App\Laboratorio;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -233,6 +234,10 @@ Route::get('filtros/{negocio_id}', function ($negocio_id) {
     return $result;
 });
 
+Route::get('productos/negocio/rank/{negocio_id}', function($negocio_id){
+    return Producto::where('negocio_id', $negocio_id)->where('ecommerce', 1)->with('categoria','negocio')->orderby('ordenes', 'desc')->limit(8)->get();
+});
+
 Route::get('negocio/get/id/{id}', function ($id) {
     $result = Negocio::where('id', $id)->where('estado', 1)->with('productos', 'tipo', 'poblacion')->first();
     return $result;
@@ -242,15 +247,21 @@ Route::get('negocio/productos/{id}', function ($id) {
     return Producto::where('negocio_id', $id)->where('ecommerce', 1)->get();
 });
 
-//clientes
+//nuevo cliente 
 Route::get('cliente/{phone}', function ($phone) {
     $micliente =  Cliente::where('chatbot_id', $phone)->with('pedidos', 'ubicaciones', 'localidad')->first();
     if ($micliente) {
         return $micliente;
     } else {
-        $newcliente = Cliente::create([
+        Cliente::create([
             'chatbot_id' => $phone
         ]);
+        User::create([
+            'email' => $phone.'@appxi.net',
+            'name' => $phone,
+            'password' => Hash::make('123456')
+        ]);
+        $newcliente =  Cliente::where('chatbot_id', $phone)->with('pedidos', 'ubicaciones', 'localidad', 'user')->first();
         return $newcliente;
     }
 });
@@ -271,6 +282,13 @@ Route::post('cliente/update/localidad', function (Request $request) {
     $cliente->save();
     $newcliente = Cliente::find($request->id);
     return $newcliente;
+});
+
+Route::post('cliente/update/pin', function (Request $request){
+    $cliente= Cliente::find($request->id);
+    $cliente->pin=$request->newpassword;
+    $cliente->save();
+    return $cliente;
 });
 
 Route::post('cliente/modo/update', function (Request $request) {
@@ -737,6 +755,12 @@ Route::post('search/producto/negocio', function (Request $request) {
     return $result;
 });
 
+//Search Producto para el Chatbot
+Route::post('search/producto/negocio/chatbot', function (Request $request) {
+    $result = Producto::where('negocio_id', $request->negocio_id)->where('nombre', 'like', '%'.$request->criterio.'%')->orWhere('titulo', 'like', '%'.$request->criterio.'%')->orWhere('etiqueta', 'like', '%'.$request->criterio.'%')->orderBy('nombre', 'desc')->with('categoria','negocio')->limit(8)->get();
+    return $result;
+});
+
 
 //catgorias
 Route::get('categorias/get', function(){
@@ -791,6 +815,8 @@ Route::post('productos/categoria', function(Request $request){
     return Producto::where('negocio_id', $request->negocio)->where('categoria_id', $request->categoria)->get();
 });
 
+
+
 Route::group(['prefix' => 'pos'], function () {
     Route::get('clientes/search/{criterio}', function($criterio){
         return Cliente::where('nombre', 'LIKE', '%'.$criterio.'%')->get();
@@ -799,4 +825,33 @@ Route::group(['prefix' => 'pos'], function () {
     Route::get('productos/search/{criterio}', function($criterio){
         return Producto::where('nombre', 'LIKE', '%'.$criterio.'%')->get();
     });
+    
+});
+
+Route::group(['prefix' => 'app'], function () {
+
+    Route::post('setauth', function (Request $request) {
+        $miuser = Cliente::where('chatbot_id', $request->phone)->with('user')->first();
+        // Auth::login($miuser->user, $remember = true);
+        if ($miuser->pin === $request->pin) {
+            # code...
+            if (Auth::attempt(['email' => $miuser->user->email, 'password' => '123456'], true)) {
+                // The user is being remembered...
+                return $miuser;
+            }else{
+                return response()->json([
+                    'message' => 'error en user'
+                ]);
+            }
+        } else {
+            # code...
+            return response()->json([
+                'message' => 'error en pin'
+            ]);
+        }
+        
+
+        // return $miuser;
+    });
+    
 });

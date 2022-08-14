@@ -13,18 +13,35 @@
 
 @section('css')
 <link href="{{ Voyager::image(setting('site.logo')) }}" rel="shortcut icon" type="image/x-icon">
-{{-- <style>
-  .column {
-		float: left;
-		width: 50%;
-	}
-	/* Clear floats after the columns */
-	.row:after {
-		content: "";
-		display: table;
-		clear: both;
-	}
-</style> --}}
+<style>
+
+.miaction img {
+  width: 100%;
+  height: auto;
+}
+
+.miaction .btn {
+  position: absolute;
+  top: 55%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  background-color: #0D2845;
+  color: white;
+  font-size: 16px;
+  /* padding: 12px 24px; */
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.miaction .btn:hover {
+  background-color: black;
+}
+#map {
+        width: 100%;
+        height: 200px;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -40,6 +57,7 @@
       $milocalidad = '';
     }else if (isset($_GET['criterio'])){
       $negocios = App\Negocio::where('nombre', 'like', '%'.$_GET['criterio'].'%')->where('estado', 1)->orderBy('order', 'asc')->with('poblacion', 'tipo', 'productos')->get();
+      $productos = App\Producto::where('ecommerce', true)->where('nombre', 'LIKE', '%'.$_GET['criterio'].'%')->orderBy('updated_at', 'desc')->with('negocio')->get();
       $micriterio = $_GET['criterio'];
 			$mitipo = 0;
       $milocalidad = 0;
@@ -57,107 +75,203 @@
   @endphp
   {{-- -------------- UI MOVIL -------------- --}}
   <div class="d-block d-sm-none">
+    @if (!isset($_GET['movil']))
     <nav class="navbar navbar-expand-sm sticky-top navbar-light justify-content-between" style="background-color: #F0F0F4;">
       <a class="navbar-brand" href="/">
         <img src="storage/{{ setting('site.logo') }}" width="30" height="30" class="d-inline-block align-top" alt="">
         {{ setting('site.title') }}
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-        <i class="fa fa-home"></i>
+        <i class="fa fa-list"></i>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-        <p class="text-center">{{ setting('site.description') }}</p>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-1" name="criterio" type="search" placeholder="Buscar negocio" aria-label="Buscar negocio">
-          <button class="btn miboton" type="submit" hidden><i class="fa fa-search"></i></button>
-        </form>
-        <p class="text-center">Compartir:</p>
-        <div class="ss-box ss-circle text-center" data-ss-content="false"></div>
-        <div class="text-center mt-2">
-          <a href="login" class="mititle text-center">
+
+
+        <div class="text-center">
+          <a href="perfil" class="text-center mititle">
             <div class="icontext text-center mt-2">                
                 <div class="icon-wrap icon-xs bg-secondary round text-light">
-                  <i class="fa fa-user"></i>
-                </div>
+                  <i class="fa fa-user"></i>                  
+                </div>            
                 <div class="text-wrap">
-                  <div>Confimar tus credenciales</div>
+                  <h5 class="mt-2">Mi Perfil</h5>
                 </div>
             </div>
           </a>
         </div>
       </div>      
     </nav>
+    @endif
 
+    {{-- Section Banner appxi  --}}
+    <aside class="">
+      <div id="carousel1_indicator" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+          <li data-target="#carousel1_indicator" data-slide-to="0" class="active"></li>
+          <li data-target="#carousel1_indicator" data-slide-to="1"></li>
+          <li data-target="#carousel1_indicator" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="miaction">
+              <img class="d-block w-100" src="https://appxi.net//storage/landinpage/mibanner5.png" alt="First slide"> 
+              <a href="/taxi/nuevo" class="btn">SOLICITAR TAXI</a>              
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="miaction">
+              <img class="d-block w-100" src="https://appxi.net//storage/landinpage/mibanner6.png" alt="Third slide">
+              <a href="/taxi/nuevo" class="btn">SOLICITAR TAXI</a>
+            </div>
+        </div>
+          <div class="carousel-item">
+            <div class="miaction">
+            <img class="d-block w-100" src="https://appxi.net//storage/landinpage/mibanner4.png" alt="Second slide">
+            <a href="/taxi/nuevo" class="btn">SOLICITAR TAXI</a>
+          </div>
+          </div>
+        </div>
+        <a class="carousel-control-prev" href="#carousel1_indicator" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carousel1_indicator" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div> 	
+    </aside>
 
-        <aside class="mb-3">
-          <div id="carousel1_indicator" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-              <li data-target="#carousel1_indicator" data-slide-to="0" class="active"></li>
-              <li data-target="#carousel1_indicator" data-slide-to="1"></li>
-              <li data-target="#carousel1_indicator" data-slide-to="2"></li>
-            </ol>
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img class="d-block w-100" src="https://appxi.net//storage/landinpage/banner1.png" alt="First slide"> 
+    {{-- section buscador  --}}
+    <div style="background-color: #F0F0F4; padding: 10px;">
+      <h2 class="text-center">MARKETPLACE</h2>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-1" name="criterio" type="search" placeholder="Buscar negocio o producto" aria-label="Buscar negocio o producto" value="{{ $micriterio }}">
+        <button class="btn miboton" type="submit" hidden><i class="fa fa-search"></i></button>
+      </form>
+      <div class="text-center">
+        <small class="" style="display: block; align: center;">{{ setting('site.description') }}</small>
+      </div>      
+    </div>
+
+    {{-- section negocios por tipos --}}
+    @if (isset($_GET['criterio']))
+      @if (count($negocios) == 0 && count($productos) == 0)
+        <h2 class="text-center mitext">sin resultados</h2>
+      @else					
+        <h4 class="mitext text-center mt-1">Negocios</h4>
+        @foreach ($negocios as $item)				
+        {{-- negocios --}}
+          <div class="card mt-1">
+            <a href="{{ route('negocio', $item->slug) }}">
+            <figure class="itemside">
+              <div class="aside">
+                <div class="img-wrap img-sm">
+                  <img src="{{ $item->logo ? Voyager::image($item->thumbnail('perfil', 'logo')) : 'storage/'.setting('negocios.img_default_negocio') }}">
+                </div>
               </div>
-              <div class="carousel-item">
-                <img class="d-block w-100" src="https://appxi.net//storage/landinpage/banner2.png" alt="Second slide">
+              <figcaption class="p-1 align-self-center mititle">
+                <h5 class="title text-truncate">{{ $item->nombre }}</h5>
+                <p>{{ $item->descripcion }}</p>
+              </figcaption>
+            </figure> 
+            </a>
+          </div>
+        @endforeach
+        <h4 class="mitext mitext text-center mt-1">Productos</h4>
+        @foreach ($productos as $item)				
+        {{-- productos --}}
+          <div class="card mt-1">
+            <a href="{{ route('producto', [$item->negocio->slug, $item->slug]) }}">
+            <figure class="itemside">
+              <div class="aside">
+                <div class="img-wrap img-sm">
+                  <img src="{{ $item->logo ? Voyager::image($item->thumbnail('perfil', 'logo')) : 'storage/'.setting('negocios.img_default_negocio') }}">
+                </div>
               </div>
-              <div class="carousel-item">
-                <img class="d-block w-100" src="https://appxi.net//storage/landinpage/banner3.png" alt="Third slide">
+              <figcaption class="p-1 align-self-center mititle">
+                <h5 class="title text-truncate">{{ $item->nombre }}</h5>
+                <p>{{ $item->detalle }}</p>
+              </figcaption>
+            </figure> 
+            </a>
+          </div>
+        @endforeach
+        <div class="text-center mt-2">
+          <a class="btn miboton" href="/">
+            <i class="fa-solid fa-rotate-left"></i> Volver
+          </a>
+        </div>
+        
+      @endif
+    @else
+      @foreach ($tipos as $item)        
+          @php
+            $minegocios = App\Negocio::where('estado', 1)->where('tipo_id', $item->id)->orderBy('order', 'asc')->with('poblacion', 'tipo', 'productos')->get();
+          @endphp
+          @if (count($minegocios) != 0)          
+          <h4 class="text-center mitext"><i class="fa-solid fa-filter"></i> {{ $item->nombre }}</h4>
+          <div class="container-fluid">
+            <div class="col-sm-12">	
+              <div class="slick-slider" data-slick='{"slidesToShow": 2, "slidesToScroll": 2}'>
+                @foreach ($minegocios as $value)
+                    <div class="item-slide p-1">
+                      <figure class="card card-product">
+                        <a href="{{ route('negocio', $value->slug) }}">
+                          <div class="img-wrap"> <img src="{{ $value->logo ? 'storage/'.$value->logo : 'storage/'.setting('negocios.img_default_negocio') }}"> </div>
+                          <h6 class="title text-center mititle mt-2 text-truncate">{{ $value->nombre }}</h6>
+                        </a>
+                        <a href="#" data-toggle="collapse" data-target="#collapse{{ $value->id }}" aria-expanded="true" class="mititle mt-2">
+                          <i class="icon-action fa fa-chevron-down"></i>
+                          <h6 class="title text-center">Leer mas</h6>
+                        </a>
+                      <div class="collapse text-center" id="collapse{{ $value->id }}" style="">
+                          <small>{{ $value->descripcion }}</small>
+                      </div>
+                        <div class="rating-wrap text-center">
+                          <ul class="rating-stars">
+                            <li style="width:{{ $value->rating }}%" class="stars-active"> 
+                              <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                            </li>
+                            <li>
+                              <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i> 
+                            </li>
+                          </ul>
+                          {{ $value->ordenes }}<i class="fa-solid fa-cart-arrow-down"></i>
+                        </div>
+                      </figure>
+                    </div>   
+                @endforeach
               </div>
             </div>
-            <a class="carousel-control-prev" href="#carousel1_indicator" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carousel1_indicator" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
-          </div> 	
-        </aside>
-    @foreach ($tipos as $item)
-      
-        @php
-          $minegocios = App\Negocio::where('estado', 1)->where('tipo_id', $item->id)->orderBy('order', 'asc')->with('poblacion', 'tipo', 'productos')->get();
-        @endphp
-        @if (count($minegocios) != 0)
-        
-        <h4 class="text-center mititle">{{ $item->nombre }}</h4>
-        <div class="slick-slider" data-slick='{"slidesToShow": 3, "slidesToScroll": 1}'>
-        @foreach ($minegocios as $value)
-            <div class="item-slide p-1">
-              <figure class="card card-product">
-                <a href="{{ route('negocio', $value->slug) }}">
-                  <div class="img-wrap"> <img src="{{ $value->logo ? 'storage/'.$value->logo : 'storage/'.setting('negocios.img_default_negocio') }}"> </div>
-                  <h6 class="title text-center mitext mt-2 text-truncate">{{ $value->nombre }}</h6>
-                </a>
-                <a href="#" data-toggle="collapse" data-target="#collapse{{ $value->id }}" aria-expanded="true" class="mititle mt-2">
-                  <i class="icon-action fa fa-chevron-down"></i>
-                  <h6 class="title">Leer mas </h6>
-                </a>
-              <div class="collapse text-center" id="collapse{{ $value->id }}" style="">
-                  <small>{{ $value->descripcion }}</small>
-              </div>
-                <div class="rating-wrap">
-                  <ul class="rating-stars">
-                    <li style="width:{{ $value->rating }}%" class="stars-active"> 
-                      <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
-                    </li>
-                    <li>
-                      <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i> 
-                    </li>
-                  </ul>
-									{{ $value->ordenes }}<i class="fa-solid fa-cart-arrow-down"></i>
-                </div>
-              </figure>
-            </div>   
-        @endforeach
+          </div>
+        @endif
+      @endforeach
+
+        {{-- section sobre nosotros --}}
+        <div class="text-center mb-2">
+          <h4 class="mitext"><i class="fa-solid fa-circle-info"></i> Sobre Nosotros</h4>
+          <table>
+            <tr>
+              <td>
+                <h4 class="text-center">Mercado Libre en Internet</h4>
+                <a class="btn miboton" href="/tarjeta">Tareta Digital</a>
+              </td>
+              <td width="60%">
+                <div id="map"></div>
+              </td>
+            </tr>
+          </table>
       </div>
-      @endif
-    @endforeach
-    {{-- <div class="fb-page" data-href="https://www.facebook.com/Appxinet-106265762190084" data-tabs="timeline" data-width="" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/Appxinet-106265762190084" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Appxinet-106265762190084">Appxi.net</a></blockquote></div> --}}
+      
+      {{-- //section share y comments --}}
+      <div style="text-center">
+        <h4 class="text-center mitext"><i class="fa-solid fa-share-from-square"></i> Compartir</h4>
+        <div class="ss-box ss-circle text-center" data-ss-content="false"></div>
+        <div class="fb-comments" data-href="https://appxi.net/" data-width="100%" data-numposts="5"></div>		
+      </div>      
+    @endif
+
 
   </div>
 
@@ -306,7 +420,7 @@
                       <div class="action-wrap">
                         <p class="">
                           <i class="fa-solid fa-filter"></i> <span> {{ $item->tipo->nombre }} </span><br>
-                          <i class="fa-solid fa-location-dot"></i> <span>{{ $item->poblacion->nombre }}</span> <br>
+                          {{-- <i class="fa-solid fa-location-dot"></i> <span>{{ $item->poblacion->nombre }}</span> <br> --}}
                           
                           {{-- <i class="fa-solid fa-clock"></i> <span> {{ $item->horario }} </span><br> --}}
                           {{-- <a href="/negocio/{{$item->slug }}" class="btn miboton"> Ver Tienda </a> --}}
@@ -430,5 +544,43 @@
       location.href = "?localidad="+this.value
     }
   })
+
+  // google maps 
+  var map;
+  var maker;
+  var options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+  };
+  navigator.geolocation.getCurrentPosition(set_origen, error, options)
+
+  function set_origen(pos) {
+      var crd = pos.coords
+      var radio = pos.accuracy
+      var myLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+      map = new google.maps.Map(document.getElementById("map"), {
+          center: myLatLng,
+          zoom: 13,
+      });
+      marker = new google.maps.Marker({
+          animation: google.maps.Animation.DROP,
+          draggable: false,
+          position: myLatLng,
+          map,
+          icon: "https://appxi.net//storage/icons8-ubicacio%CC%81n-del-usuario-64.png"
+      });
+      google.maps.event.addListener(map, 'bounds_changed', function() {
+          // $("#latitud").val(map.center.lat())
+          // $("#longitud").val(map.center.lng())
+          marker.setPosition({lat: map.center.lat(), lng: map.center.lng()})
+      });
+      // $("#latitud").val(pos.coords.latitude);
+      // $("#longitud").val(pos.coords.longitude);
+  }
+  function error(err) {
+      alert("Habilita tu Sensor GPS")
+      location.reload()
+  };
 </script>
 @endsection

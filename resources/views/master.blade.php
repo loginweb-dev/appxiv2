@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
 <html lang="es">
 <head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3938581935210559"
+     crossorigin="anonymous"></script>
 
   <meta charset="utf-8">
   <meta http-equiv="pragma" content="no-cache" />
@@ -22,9 +24,7 @@
 
   <link href="{{ asset('ecommerce/plugins/slickslider/slick.css') }}" rel="stylesheet" type="text/css" />
   <link href="{{ asset('ecommerce/plugins/slickslider/slick-theme.css') }}" rel="stylesheet" type="text/css" />
-{{-- <script src="{{ asset('ecommerce/plugins/slickslider/slick.min.js') }}"></script> --}}
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3938581935210559" crossorigin="anonymous"></script>
 
   <style>
   .scrollup{
@@ -128,4 +128,6 @@
 
   gtag('config', 'UA-236908331-1');
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDH_m3M3RHw6s6AZeubtUZ8XIW7jC2MjCU&v=weekly" defer></script>
 </html>
