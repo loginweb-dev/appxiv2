@@ -39,7 +39,7 @@
 }
 #map {
         width: 100%;
-        height: 200px;
+        height: 300px;
     }
 </style>
 @endsection
@@ -82,26 +82,25 @@
         {{ setting('site.title') }}
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-        <i class="fa fa-list"></i>
+        <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-
-
-        <div class="text-center">
-          <a href="perfil" class="text-center mititle">
-            <div class="icontext text-center mt-2">                
-                <div class="icon-wrap icon-xs bg-secondary round text-light">
-                  <i class="fa fa-user"></i>                  
-                </div>            
-                <div class="text-wrap">
-                  <h5 class="mt-2">Mi Perfil</h5>
-                </div>
-            </div>
-          </a>
-        </div>
+        <ul class="list-group list-group-flush mt-2 text-center mititle">
+          {{-- <li class="list-group-item">
+           <a class="mititle" href="/"> <i class="fa-solid fa-house-user"></i> Inicio</a>
+          </li> --}}
+          <li class="list-group-item">
+            <a class="mititle" href="/taxi/nuevo"> <i class="fa-solid fa-taxi"></i> Nuevo Viaje </a></li>
+          <li class="list-group-item">
+            <a class="mititle" href="/maps"><i class="fa-solid fa-location-crosshairs"></i> Cerca de Ti</a> 
+          </li>
+          <li class="list-group-item">
+            <a class="mititle" href="/perfil"> <i class="fa-solid fa-address-card"></i> Mi Perfil </a>
+          </li>
+        </ul>
       </div>      
     </nav>
-    @endif
+
 
     {{-- Section Banner appxi  --}}
     <aside class="">
@@ -141,7 +140,7 @@
         </a>
       </div> 	
     </aside>
-
+    @endif
     {{-- section buscador  --}}
     <div style="background-color: #F0F0F4; padding: 10px;">
       <h2 class="text-center">MARKETPLACE</h2>
@@ -156,8 +155,8 @@
 
     {{-- section negocios por tipos --}}
     @if (isset($_GET['criterio']))
-      @if (count($negocios) == 0 && count($productos) == 0)
-        <h2 class="text-center mitext">sin resultados</h2>
+      @if (count($negocios) == 0)
+        <h2 class="text-center mitext">sin negocios</h2>
       @else					
         <h4 class="mitext text-center mt-1">Negocios</h4>
         @foreach ($negocios as $item)				
@@ -167,6 +166,7 @@
             <figure class="itemside">
               <div class="aside">
                 <div class="img-wrap img-sm">
+                 
                   <img src="{{ $item->logo ? Voyager::image($item->thumbnail('perfil', 'logo')) : 'storage/'.setting('negocios.img_default_negocio') }}">
                 </div>
               </div>
@@ -178,6 +178,10 @@
             </a>
           </div>
         @endforeach
+      @endif
+      @if(count($productos) == 0)
+        <h2 class="text-center mitext">sin productos</h2>
+      @else				
         <h4 class="mitext mitext text-center mt-1">Productos</h4>
         @foreach ($productos as $item)				
         {{-- productos --}}
@@ -185,7 +189,7 @@
             <a href="{{ route('producto', [$item->negocio->slug, $item->slug]) }}">
             <figure class="itemside">
               <div class="aside">
-                <div class="img-wrap img-sm">
+                <div class="img-wrap img-sm">                
                   <img src="{{ $item->logo ? Voyager::image($item->thumbnail('perfil', 'logo')) : 'storage/'.setting('negocios.img_default_negocio') }}">
                 </div>
               </div>
@@ -201,8 +205,7 @@
           <a class="btn miboton" href="/">
             <i class="fa-solid fa-rotate-left"></i> Volver
           </a>
-        </div>
-        
+        </div>        
       @endif
     @else
       @foreach ($tipos as $item)        
@@ -210,7 +213,7 @@
             $minegocios = App\Negocio::where('estado', 1)->where('tipo_id', $item->id)->orderBy('order', 'asc')->with('poblacion', 'tipo', 'productos')->get();
           @endphp
           @if (count($minegocios) != 0)          
-          <h4 class="text-center mitext"><i class="fa-solid fa-filter"></i> {{ $item->nombre }}</h4>
+          <h4 class="text-center mitext"><i class="{{ $item->icon }}"></i> {{ $item->nombre }} </h4>
           <div class="container-fluid">
             <div class="col-sm-12">	
               <div class="slick-slider" data-slick='{"slidesToShow": 2, "slidesToScroll": 2}'>
@@ -218,7 +221,7 @@
                     <div class="item-slide p-1">
                       <figure class="card card-product">
                         <a href="{{ route('negocio', $value->slug) }}">
-                          <div class="img-wrap"> <img src="{{ $value->logo ? 'storage/'.$value->logo : 'storage/'.setting('negocios.img_default_negocio') }}"> </div>
+                          <div class="img-wrap"> <img src="{{ $value->logo ? Voyager::image($value->thumbnail('perfil', 'logo')) : 'storage/'.setting('negocios.img_default_negocio') }}"> </div>
                           <h6 class="title text-center mititle mt-2 text-truncate">{{ $value->nombre }}</h6>
                         </a>
                         <a href="#" data-toggle="collapse" data-target="#collapse{{ $value->id }}" aria-expanded="true" class="mititle mt-2">
@@ -248,28 +251,34 @@
         @endif
       @endforeach
 
-        {{-- section sobre nosotros --}}
-        <div class="text-center mb-2">
-          <h4 class="mitext"><i class="fa-solid fa-circle-info"></i> Sobre Nosotros</h4>
-          <table>
-            <tr>
-              <td>
-                <h4 class="text-center">Mercado Libre en Internet</h4>
-                <a class="btn miboton" href="/tarjeta">Tareta Digital</a>
-              </td>
-              <td width="60%">
-                <div id="map"></div>
-              </td>
-            </tr>
-          </table>
-      </div>
-      
-      {{-- //section share y comments --}}
-      <div style="text-center">
-        <h4 class="text-center mitext"><i class="fa-solid fa-share-from-square"></i> Compartir</h4>
-        <div class="ss-box ss-circle text-center" data-ss-content="false"></div>
-        <div class="fb-comments" data-href="https://appxi.net/" data-width="100%" data-numposts="5"></div>		
-      </div>      
+      @if (!isset($_GET['movil']))
+        {{-- section cerca de ti --}}
+        {{-- <div class="text-center mb-2">
+            <h4 class="mitext"><i class="fa-solid fa-location-dot"></i> Cerca de Ti </h4>
+            <table>
+              <tr>
+                <td>
+                  <h4 class="text-center">Mercado Libre en Internet</h4>
+                  <a class="btn miboton" href="/tarjeta">Tareta Digital</a>
+                </td>
+                <td width="60%">
+                  <div id="map"></div>
+                </td>
+              </tr>
+            </table>
+            <div id="map"></div>
+        </div> --}}
+        
+        {{-- //section share y comments --}}
+        <div style="text-center">
+          <h4 class="text-center mitext"><i class="fa-solid fa-share-from-square"></i> Compartir</h4>
+          <div class="ss-box ss-circle text-center" data-ss-content="false"></div>
+          <div class="fb-comments" data-href="https://appxi.net/" data-width="100%" data-numposts="5"></div>		
+        </div>    
+      @else
+        <hr>
+        <hr>
+      @endif
     @endif
 
 
@@ -544,43 +553,5 @@
       location.href = "?localidad="+this.value
     }
   })
-
-  // google maps 
-  var map;
-  var maker;
-  var options = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
-  };
-  navigator.geolocation.getCurrentPosition(set_origen, error, options)
-
-  function set_origen(pos) {
-      var crd = pos.coords
-      var radio = pos.accuracy
-      var myLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude }
-      map = new google.maps.Map(document.getElementById("map"), {
-          center: myLatLng,
-          zoom: 13,
-      });
-      marker = new google.maps.Marker({
-          animation: google.maps.Animation.DROP,
-          draggable: false,
-          position: myLatLng,
-          map,
-          icon: "https://appxi.net//storage/icons8-ubicacio%CC%81n-del-usuario-64.png"
-      });
-      google.maps.event.addListener(map, 'bounds_changed', function() {
-          // $("#latitud").val(map.center.lat())
-          // $("#longitud").val(map.center.lng())
-          marker.setPosition({lat: map.center.lat(), lng: map.center.lng()})
-      });
-      // $("#latitud").val(pos.coords.latitude);
-      // $("#longitud").val(pos.coords.longitude);
-  }
-  function error(err) {
-      alert("Habilita tu Sensor GPS")
-      location.reload()
-  };
 </script>
 @endsection

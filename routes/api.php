@@ -256,11 +256,12 @@ Route::get('cliente/{phone}', function ($phone) {
         Cliente::create([
             'chatbot_id' => $phone
         ]);
-        User::create([
-            'email' => $phone.'@appxi.net',
-            'name' => $phone,
-            'password' => Hash::make('123456')
-        ]);
+        // User::create([
+        //     'email' => 'default@appxi.net',
+        //     'name' => $phone,
+        //     'password' => Hash::make('123456'),
+        //     'role_id' => 2
+        // ]);
         $newcliente =  Cliente::where('chatbot_id', $phone)->with('pedidos', 'ubicaciones', 'localidad', 'user')->first();
         return $newcliente;
     }
@@ -479,6 +480,8 @@ Route::post('pedido/comentario', function(Request $request){
     }
     return $pedido_comentado;
 });
+
+
 
 //poblaciones
 Route::get('poblaciones', function(){
@@ -817,26 +820,50 @@ Route::post('productos/categoria', function(Request $request){
 
 
 
+//RUTA POS --------------------------------
 Route::group(['prefix' => 'pos'], function () {
     Route::get('clientes/search/{criterio}', function($criterio){
         return Cliente::where('nombre', 'LIKE', '%'.$criterio.'%')->get();
     });
-
     Route::get('productos/search/{criterio}', function($criterio){
         return Producto::where('nombre', 'LIKE', '%'.$criterio.'%')->get();
     });
-    
 });
 
+
+//Rutas APP --------------------------------
 Route::group(['prefix' => 'app'], function () {
+
+    Route::post('cliente', function (Request $request) {
+        $micliente =  Cliente::where('chatbot_id', $request->phone)->with('user')->first();
+        if ($micliente) {
+            $micliente->nombre = $request->nombre;
+            $micliente->pin = $request->pin;
+            $micliente->save();
+            return Cliente::where('chatbot_id', $request->phone)->with('user')->first();
+        } else {
+            $user = User::create([
+                'email' => $request->correo,
+                'name' => $request->nombre,
+                'password' => Hash::make('123456'),
+                'role_id' => 2
+            ]);
+            Cliente::create([
+                'chatbot_id' => $request->phone,
+                'nombre' => $request->nombre,
+                'pin' => $request->pin,
+                'poblacion_id' => $request->localidad,
+                'user_id' => $user->id
+            ]);
+            $newcliente =  Cliente::where('chatbot_id', $request->phone)->with('user')->first();
+            return $newcliente;
+        }
+    });
 
     Route::post('setauth', function (Request $request) {
         $miuser = Cliente::where('chatbot_id', $request->phone)->with('user')->first();
-        // Auth::login($miuser->user, $remember = true);
         if ($miuser->pin === $request->pin) {
-            # code...
             if (Auth::attempt(['email' => $miuser->user->email, 'password' => '123456'], true)) {
-                // The user is being remembered...
                 return $miuser;
             }else{
                 return response()->json([
@@ -844,14 +871,40 @@ Route::group(['prefix' => 'app'], function () {
                 ]);
             }
         } else {
-            # code...
             return response()->json([
                 'message' => 'error en pin'
             ]);
         }
-        
+    });
 
-        // return $miuser;
+    Route::get('negocios', function(){
+        return Negocio::all();
     });
     
+    Route::get('cliente/by/user/{user_id}', function ($user_id) {
+        return Cliente::where('user_id', $user_id)->first();
+    });
+});
+
+//Rutas APP --------------------------------
+Route::group(['prefix' => 'chatbot'], function () {
+    //Añadir Puntuacion del Pedido
+    Route::post('pedido/puntuacion', function(Request $request){
+        $pedido= Pedido::where('chatbot_id', $request->telefono)->orderBy('created_at', 'desc')->with('productos')->first();
+        if ($pedido) {
+            foreach ($pedido->productos as $item) {
+                $producto= Producto::find($item->producto_id);
+                $cantidad= $producto->ordenes;
+                $puntuacion= $producto->rating;
+                $total_puntuacion= $puntuacion * $cantidad;
+                $cantidad+=$item->cantidad;
+                $puntuacion=($total_puntuacion+$request->puntuacion)/$cantidad;
+                $producto->ordenes=$cantidad;
+                $producto->rating=$puntuacion;
+                $producto->save();
+            }
+            return $pedido;
+        }
+    });
+
 });

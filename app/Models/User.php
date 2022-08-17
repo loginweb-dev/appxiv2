@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 class User extends \TCG\Voyager\Models\User
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -17,6 +18,8 @@ class User extends \TCG\Voyager\Models\User
      *
      * @var array<int, string>
      */
+
+    // use SoftDeletes;
     protected $fillable = [
         'name',
         'email',

@@ -1,22 +1,9 @@
 {
     "59172834094@c.us": 22,
     "59170269362@c.us": {
-        "id": 52,
-        "nombre": "Calabresa",
-        "precio": [
-            {
-                "opcion": "A",
-                "precio": 20
-            },
-            {
-                "opcion": "B",
-                "precio": 50
-            },
-            {
-                "opcion": "C",
-                "precio": 80
-            }
-        ],
+        "id": 55,
+        "nombre": "4 Quesos",
+        "precio": 20,
         "extra": [
             {
                 "id": 23,
@@ -122,99 +109,111 @@
         "negocio_nombre": "Pizzas Villazón"
     },
     "59171130523@c.us": {
-        "nombre": "Burguer Classic",
-        "precio": 14,
+        "id": 55,
+        "nombre": "4 Quesos",
+        "precio": 50,
         "extra": [
             {
-                "id": 1,
+                "id": 23,
+                "nombre": "Jamón",
+                "descripcion": null,
+                "negocio_id": 20,
+                "precio": 6,
+                "created_at": "2022-08-11T12:40:09.000000Z",
+                "updated_at": "2022-08-11T12:40:09.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 24,
                 "nombre": "Tocino",
                 "descripcion": null,
-                "negocio_id": 1,
-                "precio": 3,
-                "created_at": "2022-07-18T18:17:00.000000Z",
-                "updated_at": "2022-07-18T18:17:00.000000Z",
+                "negocio_id": 20,
+                "precio": 6,
+                "created_at": "2022-08-11T12:44:19.000000Z",
+                "updated_at": "2022-08-11T12:44:19.000000Z",
                 "deleted_at": null,
                 "image": null
             },
             {
-                "id": 2,
-                "nombre": "Jamon",
+                "id": 25,
+                "nombre": "Calabresa",
                 "descripcion": null,
-                "negocio_id": 1,
-                "precio": 3,
-                "created_at": "2022-07-18T18:17:20.000000Z",
-                "updated_at": "2022-07-18T18:17:20.000000Z",
+                "negocio_id": 20,
+                "precio": 6,
+                "created_at": "2022-08-11T12:45:22.000000Z",
+                "updated_at": "2022-08-11T12:45:22.000000Z",
                 "deleted_at": null,
                 "image": null
             },
             {
-                "id": 3,
-                "nombre": "Huevo",
+                "id": 26,
+                "nombre": "Carnes",
                 "descripcion": null,
-                "negocio_id": 1,
-                "precio": 2,
-                "created_at": "2022-07-18T18:17:45.000000Z",
-                "updated_at": "2022-07-18T18:17:45.000000Z",
+                "negocio_id": 20,
+                "precio": 6,
+                "created_at": "2022-08-11T12:46:00.000000Z",
+                "updated_at": "2022-08-11T12:46:00.000000Z",
                 "deleted_at": null,
                 "image": null
             },
             {
-                "id": 4,
+                "id": 27,
+                "nombre": "Champiñones",
+                "descripcion": null,
+                "negocio_id": 20,
+                "precio": 6,
+                "created_at": "2022-08-11T12:46:23.000000Z",
+                "updated_at": "2022-08-11T12:46:23.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 28,
+                "nombre": "Aceitunas",
+                "descripcion": null,
+                "negocio_id": 20,
+                "precio": 6,
+                "created_at": "2022-08-11T12:47:00.000000Z",
+                "updated_at": "2022-08-11T12:47:00.000000Z",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 29,
                 "nombre": "Queso",
                 "descripcion": null,
-                "negocio_id": 1,
-                "precio": 2,
-                "created_at": "2022-07-18T18:17:55.000000Z",
-                "updated_at": "2022-07-18T18:17:55.000000Z",
-                "deleted_at": null,
-                "image": null
-            },
-            {
-                "id": 5,
-                "nombre": "Chorizo",
-                "descripcion": null,
-                "negocio_id": 1,
+                "negocio_id": 20,
                 "precio": 6,
-                "created_at": "2022-07-18T18:18:07.000000Z",
-                "updated_at": "2022-07-18T18:18:07.000000Z",
+                "created_at": "2022-08-11T12:47:14.000000Z",
+                "updated_at": "2022-08-11T12:47:14.000000Z",
                 "deleted_at": null,
                 "image": null
             },
             {
-                "id": 6,
-                "nombre": "Carne Hamburguesa",
+                "id": 30,
+                "nombre": "Bordes Mediana",
                 "descripcion": null,
-                "negocio_id": 1,
-                "precio": 6,
-                "created_at": "2022-07-18T18:18:59.000000Z",
-                "updated_at": "2022-07-18T18:19:11.000000Z",
+                "negocio_id": 20,
+                "precio": 8,
+                "created_at": "2022-08-11T12:49:57.000000Z",
+                "updated_at": "2022-08-11T12:49:57.000000Z",
                 "deleted_at": null,
                 "image": null
             },
             {
-                "id": 7,
-                "nombre": "Carne Lomito",
+                "id": 31,
+                "nombre": "Bordes Familiar",
                 "descripcion": null,
-                "negocio_id": 1,
-                "precio": 6,
-                "created_at": "2022-07-18T18:19:24.000000Z",
-                "updated_at": "2022-07-18T18:19:24.000000Z",
-                "deleted_at": null,
-                "image": null
-            },
-            {
-                "id": 8,
-                "nombre": "Papas Fritas",
-                "descripcion": null,
-                "negocio_id": 1,
-                "precio": 5,
-                "created_at": "2022-07-18T18:19:40.000000Z",
-                "updated_at": "2022-07-18T18:19:40.000000Z",
+                "negocio_id": 20,
+                "precio": 8,
+                "created_at": "2022-08-11T12:53:11.000000Z",
+                "updated_at": "2022-08-11T12:53:11.000000Z",
                 "deleted_at": null,
                 "image": null
             }
         ],
-        "negocio_id": 1,
-        "negocio_nombre": "Skot Burger"
+        "negocio_id": 20,
+        "negocio_nombre": "Pizzas Villazón"
     }
 }

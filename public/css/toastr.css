@@ -1,0 +1,146 @@
+/**************************************************************************************
+Title: toastr.js
+Description: A javascript library to show android style toast notifications on web.
+Developer URI: https://www.voidtricks.com
+Documentation URI: https://www.voidtricks.com/toastr/
+
+**************************************************************************************/
+.toastrWrap{
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    margin-left: -250px;
+    text-align: center;
+    background: #2d2d2dc2;
+    font-family: sans-serif;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 25px;
+    font-size: 18px;
+    box-sizing: border-box;
+    text-shadow: 0 0 2px #383737;
+    opacity: 0;
+    z-index: 999999;
+}
+.toastrWrap.topCenter{
+    top: 40px;
+    bottom: inherit;
+}
+.toastrWrap.topLeft{
+    top: 40px;
+    bottom: inherit;
+    left: 30px;
+    margin-left: 0 !important;
+}
+.toastrWrap.topRight{
+    top: 40px;
+    bottom: inherit;
+    right: 30px;
+    left: inherit;
+    margin-left: 0 !important;
+}
+.toastrWrap.bottomLeft{
+    left: 30px;
+    margin-left: 0 !important;
+}
+.toastrWrap.bottomRight{
+    right: 30px;
+    left: inherit;
+    margin-left: 0 !important;
+}
+.toastrWrap.show{
+    opacity:1;
+}
+.toastrWrap.fade{
+    transition: opacity 0.2s ease-in-out;
+    -webkit-transition: opacity 0.2s ease-in-out;
+    -moz-transition: opacity 0.2s ease-in-out;
+    -o-transition: opacity 0.2s ease-in-out;
+}
+.toastrWrap.slide{
+   bottom: -100px;
+   opacity:1;
+   transition: bottom 0.2s ease-in-out;
+   -webkit-transition: bottom 0.2s ease-in-out;
+   -moz-transition: bottom 0.2s ease-in-out;
+   -o-transition: bottom 0.2s ease-in-out;
+}
+.toastrWrap.slide.topRight, .toastrWrap.slide.topLeft, .toastrWrap.slide.topCenter{
+    top: -100px;
+    bottom: inherit;
+    opacity:1;
+    transition: top 0.2s ease-in-out;
+    -webkit-transition: top 0.2s ease-in-out;
+    -moz-transition: top 0.2s ease-in-out;
+    -o-transition: top 0.2s ease-in-out;
+ }
+.toastrWrap.fade.show{
+    transition: opacity 0.2s ease-in-out;
+    -webkit-transition: opacity 0.2s ease-in-out;
+    -moz-transition: opacity 0.2s ease-in-out;
+    -o-transition: opacity 0.2s ease-in-out;
+}
+.toastrWrap.slide.show{
+    bottom: 40px;
+    transition: bottom 0.2s ease-in-out;
+    -webkit-transition: bottom 0.2s ease-in-out;
+    -moz-transition: bottom 0.2s ease-in-out;
+    -o-transition: bottom 0.2s ease-in-out;
+}
+.toastrWrap.slide.topRight.show, .toastrWrap.slide.topLeft.show, .toastrWrap.slide.topCenter.show{
+    top: 40px;
+    bottom: inherit;
+    transition: top 0.2s ease-in-out;
+    -webkit-transition: top 0.2s ease-in-out;
+    -moz-transition: top 0.2s ease-in-out;
+    -o-transition: top 0.2s ease-in-out;
+}
+.toastrWrap.moon{
+    background: #ffffffb0;
+    color: #737373;
+    text-shadow: none;
+    border: 1px solid #b9b9b9;
+    box-shadow: 0 0 5px #b3b3b3;
+}
+
+.toastrWrap.sun{
+    background: #ff712ae8;
+    color: #fff;
+    background: -webkit-linear-gradient(to top left, #ff8d10, #fb3838);
+    background: -o-linear-gradient(to top left, #ff8d10, #fb3838);
+    background: -moz-linear-gradient(to top left, #ff8d10, #fb3838);
+    background: linear-gradient(to top left, #ff8d10, #fb3838);
+    border: 1px solid #f9cc39;
+    text-shadow: none;
+    box-shadow: 0 0 5px #ffdd1f;
+}
+
+.toastrWrap.ocean{
+    background: #0e73a9d9;
+    text-shadow: none;
+    box-shadow: 0 0 5px #75f6ff;
+}
+
+.toastrWrap.rainbow{
+    text-shadow: 0 0 3px #000;
+    font-weight: bold;
+    background: blue;
+    background: -webkit-linear-gradient(right, orange , yellow, green, cyan, blue, violet);
+    background: -o-linear-gradient(right, orange, yellow, green, cyan, blue, violet);
+    background: -moz-linear-gradient(right, orange, yellow, green, cyan, blue, violet);
+    background: linear-gradient(to right, orange , yellow, green, cyan, blue, violet);
+    border: 1px solid #888;
+}
+
+.toastrWrap.grassland{
+    color: #fff;
+    text-shadow: none;
+    background: #48cc39;
+    background: -webkit-linear-gradient(to top left, #b9d240, #37b928);
+    background: -o-linear-gradient(to top left, #b9d240, #37b928);
+    background: -moz-linear-gradient(to top left, #b9d240, #37b928);
+    background: linear-gradient(to top left, #b9d240, #37b928);
+    border: 1px solid #65b14f;
+}
+
+

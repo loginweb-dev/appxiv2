@@ -31,7 +31,7 @@ Route::get('/', function () {
 
 
 
-Route::get('/nosotros', function () {
+Route::get('nosotros', function () {
     return view('welcome');
 });
 
@@ -39,9 +39,19 @@ Route::get('/nosotros', function () {
 //     return view('markplace');
 // });
 
-Route::get('/privacidad', function () {
+Route::get('privacidad', function () {
     return view('privacidad');
 });
+
+Route::get('tarjeta/{slug}', function ($slug) {
+    $negocio = App\Negocio::where('slug', $slug)->first();
+    return view('tarjeta', compact('negocio'));
+})->name('tarjeta');
+
+Route::get('maps', function () {
+    return view('maps');
+});
+
 
 Route::get('mensajero/{chatbot_id}', function ($chatbot_id) {
     $mipedidos = App\Pedido::where('mensajero_id', $chatbot_id)->orderBy('created_at', 'desc')->get();
@@ -75,10 +85,10 @@ Route::get('milogout', function () {
 
 
 Route::get('/perfil', function () {
+    // return 'mierda';
     if(Auth::user()){
-        # code...
         $miuser = User::find(Auth::user()->id);
-        $micliente = Cliente::where('user_id', Auth::user()->id)->first();
+        $micliente = Cliente::where('user_id', Auth::user()->id)->with('pedidos')->first();
         return view('perfil', compact('miuser', 'micliente'));
     } else {
         return view('login');

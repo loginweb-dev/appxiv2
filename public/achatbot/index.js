@@ -72,14 +72,14 @@ client.on('message', async msg => {
             var ubicacion=''
             ubicacion +='Ubicación del Cliente: '+mipedido.data.cliente.nombre+'\n'
             ubicacion+= 'http://maps.google.com/maps?&z=12&mrt=yp&t=k&q='+mipedido.data.ubicacion.latitud+'+'+mipedido.data.ubicacion.longitud+'\n'
-            ubicacion+='Descripcion: '+mipedido.data.ubicacion.detalles
+            ubicacion+='Descripción: '+mipedido.data.ubicacion.detalles
             client.sendMessage(msg.from, ubicacion)
 
             var send_negocios= await negocios_pedido(5)
             console.log(send_negocios)
             for (let index = 0; index < send_negocios.length; index++) {
                 ubicacion=''
-                ubicacion+=' Ubicacion del Negocio: '+send_negocios[index].nombre+'\n'
+                ubicacion+=' Ubicación del Negocio: '+send_negocios[index].nombre+'\n'
                 ubicacion+= 'http://maps.google.com/maps?&z=12&mrt=yp&t=k&q='+send_negocios[index].latitud+'+'+send_negocios[index].longitud
                 client.sendMessage(msg.from, ubicacion)
             }
@@ -95,14 +95,16 @@ client.on('message', async msg => {
                     }else if (msg.body.toUpperCase() === 'A'){
                         var encola = await axios(process.env.APP_URL+'api/pedidos/get/encola')
                         if (encola.data.length>0) {
-                            var list = '*Pedidos en cola, elige uno para iniciar el proceso*\n'
+                            var list = '*Pedidos en cola*\n'
                             list += '----------------------------------\n'
                             for (let index = 0; index < encola.data.length; index++) {
                                 list += '*'+encola.data[index].id+'* .- '+encola.data[index].cliente.nombre+' ('+encola.data[index].published+')\n' 
                             }
                             list += '----------------------------------\n'
-                            list +='*A.-* Eligirás un pedido para tomarlo. \n'
+                            list +='*A.-* Elige un pedido para tomarlo. \n'
                             list +='*B.-* Regresar al Menú Principal\n'
+                            list += '----------------------------------\n'
+                            list += 'Envía una opción (ejemplo: *A*)'
                             client.sendMessage(msg.from, list)
                             status.set(msg.from, 0.1)
                         }
@@ -177,14 +179,15 @@ client.on('message', async msg => {
                             mitext+= '------------------------------------------\n'
                             mitext+= '*A* .- Ya recogi todos los productos\n'
                             mitext+= '*B* .- Cancelo el pedido\n'
-                            mitext+= 'Envia una opción'                              
+                            mitext+= '------------------------------------------\n'
+                            mitext+= 'Envia una opción (ejemplo: *A*)'                              
                             client.sendMessage(msg.from, mitext)
                             var contacto_cliente= await client.getContactById(pedido.data.cliente.chatbot_id)
                             client.sendMessage(msg.from, contacto_cliente);
                             // message for client
                             await axios.post(process.env.CHATBOT_URL+'message', {
                                 phone: pedido.data.chatbot_id,
-                                message: 'Tu pedido fue asignado al delivery: *'+pedido.data.mensajero.nombre+'*, se te notificara cuando el delivery recoga tu pedido y este de ida entregar.'
+                                message: 'Tu pedido fue asignado al Delivery: *'+pedido.data.mensajero.nombre+'*, se te notificará cuando el delivery recoja tu pedido y esté de ida entregar.'
                             })                               
                                  
                             status.set(msg.from, 1)
@@ -225,7 +228,8 @@ client.on('message', async msg => {
                         mitext+=ubicacion    
                         mitext+= '------------------------------------------\n'
                         mitext+= '*A* .- Ya entregué el pedido\n'
-                        mitext+= 'Envía una opción'
+                        mitext+= '------------------------------------------\n'
+                        mitext+= 'Envía una opción (ejemplo: *A*)'
                         status.set(msg.from, 2)
                         client.sendMessage(msg.from, mitext)
                         // var locaton= new Location(pedido.ubicacion.latitud, pedido.ubicacion.longitud, pedido.ubicacion.detalles)
@@ -300,7 +304,8 @@ client.on('message', async msg => {
                         mitext = 'Ya llego tu pedido *#'+pedido.id+'* ?\n'
                         mitext += '*A* .- Si llegó\n'
                         mitext += '*B* .- No llegó\n'
-                        mitext += 'Envia una opción'         
+                        mitext += '----------------------------------\n'
+                        mitext += 'Envia una opción (ejemplo: *A*)'         
                         //client.sendMessage(pedido.chatbot_id, mitext)
                         //CLIENTE
                         await axios.post(process.env.CHATBOT_URL+'cart', {

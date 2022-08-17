@@ -24,7 +24,7 @@
 
   <link href="{{ asset('ecommerce/plugins/slickslider/slick.css') }}" rel="stylesheet" type="text/css" />
   <link href="{{ asset('ecommerce/plugins/slickslider/slick-theme.css') }}" rel="stylesheet" type="text/css" />
-
+  <link rel="stylesheet" type="text/css" href="{{ asset('css/toastr.css') }}"> 
 
   <style>
   .scrollup{
@@ -40,12 +40,12 @@
      /* text-indent:-9999px; */
      /* background: url(../images/icon_top.png) no-repeat; */
   } 
-  article:hover{
+  /* article:hover{
     box-shadow: 5px 5px 5px 2px #0C2746;
-  }
-  nav:hover{
+  } */
+  /* nav:hover{
     box-shadow: 5px 5px 5px 2px #0C2746;
-  }
+  } */
   .panel:hover{
     box-shadow: 5px 5px 5px 2px #0C2746;
   }
@@ -91,6 +91,7 @@
 	<script src="https://kit.fontawesome.com/6510b28365.js" crossorigin="anonymous"></script>
 	<script src="{{ asset('js/boxs.js') }}" crossorigin="anonymous"></script>
 	<script src="{{ asset('js/chatbot.js') }}" crossorigin="anonymous"></script>
+  <script src="{{ asset('js/toastr.js') }}" crossorigin="anonymous"></script>
   <script>
     window.fbAsyncInit = function() {
       FB.init({

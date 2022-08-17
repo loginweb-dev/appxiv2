@@ -3,13 +3,67 @@
         {
             "option": "A",
             "categoria": {
+                "id": 1,
+                "created_at": "2022-06-23T03:13:26.000000Z",
+                "updated_at": "2022-07-31T18:23:24.000000Z",
+                "deleted_at": null,
+                "nombre": "Comidas",
+                "tipo_id": 1,
+                "published": "hace 1 mes",
+                "fecha": "2022-06-22"
+            }
+        },
+        {
+            "option": "B",
+            "categoria": {
+                "id": 142,
+                "created_at": "2022-08-15T18:25:02.000000Z",
+                "updated_at": "2022-08-15T18:25:02.000000Z",
+                "deleted_at": null,
+                "nombre": "Sandwiches",
+                "tipo_id": 1,
+                "published": "hace 21 horas",
+                "fecha": "2022-08-15"
+            }
+        },
+        {
+            "option": "C",
+            "categoria": {
+                "id": 143,
+                "created_at": "2022-08-15T18:26:53.000000Z",
+                "updated_at": "2022-08-15T18:26:53.000000Z",
+                "deleted_at": null,
+                "nombre": "Milanesas",
+                "tipo_id": 1,
+                "published": "hace 21 horas",
+                "fecha": "2022-08-15"
+            }
+        },
+        {
+            "option": "D",
+            "categoria": {
+                "id": 144,
+                "created_at": "2022-08-15T18:32:11.000000Z",
+                "updated_at": "2022-08-15T18:32:11.000000Z",
+                "deleted_at": null,
+                "nombre": "Alitas",
+                "tipo_id": 1,
+                "published": "hace 21 horas",
+                "fecha": "2022-08-15"
+            }
+        }
+    ],
+    "59171130523@c.us": [
+        {
+            "option": "A",
+            "categoria": {
                 "id": 140,
                 "created_at": "2022-08-11T12:34:56.000000Z",
                 "updated_at": "2022-08-11T12:34:56.000000Z",
                 "deleted_at": null,
                 "nombre": "Sabores Clasicos",
                 "tipo_id": 1,
-                "published": "hace 1 día",
+                "published": "hace 5 días",
                 "fecha": "2022-08-11"
             }
         },
@@ -22,7 +76,7 @@
                 "deleted_at": null,
                 "nombre": "Sabores Especiales",
                 "tipo_id": 1,
-                "published": "hace 1 día",
+                "published": "hace 5 días",
                 "fecha": "2022-08-11"
             }
         }

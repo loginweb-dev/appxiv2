@@ -18,13 +18,13 @@
     "A7": 7,
     "A8": 8,
     "59170269362@c.us": {
-        "id": 2,
-        "nombre": "Farmacias & Medicamentos",
-        "created_at": "2022-07-04T17:56:27.000000Z",
-        "updated_at": "2022-08-09T21:26:53.000000Z",
+        "id": 1,
+        "nombre": "Restaurantes & Comida Rapida",
+        "created_at": "2022-07-04T17:55:43.000000Z",
+        "updated_at": "2022-08-09T22:14:35.000000Z",
         "deleted_at": null,
-        "icon": "fa-solid fa-briefcase-medical",
-        "order": 4,
-        "logo": null
+        "icon": "fa-solid fa-utensils",
+        "order": 1,
+        "logo": "tipos/August2022/NTiF2URGZXEiG9Y1UF6I.jpg"
     }
 }
