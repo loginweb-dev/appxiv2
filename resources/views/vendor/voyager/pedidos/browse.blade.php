@@ -269,6 +269,7 @@
                                                     @include('voyager::bread.partials.actions', ['action' => $action])
                                                 @endif
                                             @endforeach
+                                            <a onclick="Resetear({{$data->id}})" class="btn btn-sm btn-dark pull-right" ><i class="voyager-helm"></i><span class="hidden-xs hidden-sm">Reset</span></a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -479,8 +480,9 @@
                 }
             }
             else if (user.data.role_id==4) {
+                var mensajero= await axios("{{setting('admin.url')}}api/find/mensajero/"+user.data.id)
                 var url_destino="{{route('pedidosmensajero', 'mivariable')}}"
-                url_destino= url_destino.replace('mivariable', user.data.id)
+                url_destino= url_destino.replace('mivariable', mensajero.data.id)
                 var url_actual=window.location.href  
                 if (url_destino!=url_actual) {
                     location.href=url_destino
@@ -577,6 +579,21 @@
             $('#report_table').append("<tr><td>Total para GoDelivery: </td><td> "+total_godelivery+"</td></tr>");
 
                
+        }
+
+        async function Resetear(id){
+            var pedido= await axios("{{setting('admin.url')}}api/find/pedido/"+id)
+            var midata={
+                phone:pedido.data.mensajero.telefono,
+                mistatus:0
+            }
+            await axios.post("{{setting('admin.chatbot_url')}}reset/mensajero", midata)
+            var midata2={
+                phone: pedido.data.cliente.chatbot_id,
+                mistatus:0.6
+            }
+            await axios.post("{{setting('admin.chatbot_url_clientes')}}reset/cliente", midata2)
+       
         }
 
 

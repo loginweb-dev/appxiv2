@@ -16,6 +16,8 @@ class Carrito extends Model
         'cantidad',
         'negocio_id',
         'negocio_name',
+        'coccion_id',
+        'mensaje'
     ];
     protected $appends=['published', 'fecha'];
 	public function getPublishedAttribute(){

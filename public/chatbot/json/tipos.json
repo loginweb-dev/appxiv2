@@ -5,26 +5,6 @@
     "A4": 4,
     "A5": 5,
     "A6": 6,
-    "59171130523@c.us": {
-        "id": 1,
-        "nombre": "Restaurantes & Comida Rapida",
-        "created_at": "2022-07-04T17:55:43.000000Z",
-        "updated_at": "2022-08-09T22:14:35.000000Z",
-        "deleted_at": null,
-        "icon": "fa-solid fa-utensils",
-        "order": 1,
-        "logo": "tipos/August2022/NTiF2URGZXEiG9Y1UF6I.jpg"
-    },
     "A7": 7,
-    "A8": 8,
-    "59170269362@c.us": {
-        "id": 1,
-        "nombre": "Restaurantes & Comida Rapida",
-        "created_at": "2022-07-04T17:55:43.000000Z",
-        "updated_at": "2022-08-09T22:14:35.000000Z",
-        "deleted_at": null,
-        "icon": "fa-solid fa-utensils",
-        "order": 1,
-        "logo": "tipos/August2022/NTiF2URGZXEiG9Y1UF6I.jpg"
-    }
+    "A8": 8
 }

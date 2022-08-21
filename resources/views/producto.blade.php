@@ -6,58 +6,42 @@
 <meta property="og:site_name" content="{{ $producto->nombre }}">
 <meta property="og:title" content="{{ $producto->nombre }}" />
 <meta property="og:description" content="{{ $producto->detalle }}" />
-<meta property="og:image" itemprop="image" content="{{ $producto->image ? Voyager::image($producto->thumbnail('cropped', 'image')) : setting('productos.img_default_producto') }}">
+<meta property="og:image" itemprop="image" content="{{ $producto->image ? Voyager::image($producto->thumbnail('cropped', 'image')) : Voyager::image($negocio->thumbnail('perfil', 'logo')) }}">
 <meta property="og:type" content="website" />
 <meta property="og:updated_time" content="1440432930" />
 @endsection
 @section('css')
-<link href="{{ $producto->image ? asset('storage/'.$producto->image) : setting('productos.img_default_producto') }}" rel="shortcut icon" type="image/x-icon">
+<link href="{{ $producto->image ? Voyager::image($producto->thumbnail('cropped', 'image')) : Voyager::image($negocio->thumbnail('perfil', 'logo')) }}" rel="shortcut icon" type="image/x-icon">
+<style>
+</style>
 @endsection
 
 @section('content')
 {{-- -------------- UI MOVIL -------------- --}}
 <div class="d-block d-sm-none">
-  <nav class="navbar navbar-expand-sm sticky-top navbar-light justify-content-between" style="background-color: #F0F0F4;">
-    <a class="navbar-brand" href="{{ route('negocio', $negocio->slug) }}">
+  <nav class="navbar sticky-top navbar-light justify-content-center" style="background-color: #F0F0F4;">
+    <a class="navbar-brand mititle" href="{{ route('negocio', $negocio->slug) }}">
       <img src="{{ Voyager::image($negocio->thumbnail('perfil', 'logo')) }}" width="30" height="30" class="d-inline-block align-top rounded" alt="">
       {{ $negocio->nombre }}
       <br>
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-      <ul class="list-group list-group-flush mt-2 text-center mititle">
-        <li class="list-group-item">
-         <a class="mititle" href="/"> <i class="fa-solid fa-house-user"></i> Inicio</a>
-        </li>
-        <li class="list-group-item">
-          <a class="mititle" href="/taxi/nuevo"> <i class="fa-solid fa-taxi"></i> Nuevo Viaje </a></li>
-        <li class="list-group-item">
-          <a class="mititle" href="/maps"><i class="fa-solid fa-location-crosshairs"></i> Cerca de Ti</a> 
-        </li>
-        <li class="list-group-item">
-          <a class="mititle" href="/perfil"> <i class="fa-solid fa-address-card"></i> Mi Perfil </a>
-        </li>
-      </ul>
-    </div>   
-  </nav>
-</div>
 
-{{-- -------------- UI DESSKTOP -------------- --}}
-<div class="container-fluid d-none d-sm-block mt-2">
-  <nav class="navbar sticky-top navbar-light" style="background-color: #F0F0F4;">
-    <a class="navbar-brand" href="{{ Voyager::image($negocio->thumbnail('perfil', 'logo')) }}  Voyager::image($negocio->thumbnail('perfil', 'logo')) }}">
-      <img src="{{ asset('storage/'.$negocio->logo) }}" width="30" height="30" class="d-inline-block align-top" alt="">
-      {{ $negocio->nombre }}
-    </a>    
+    <div id="miback">
+      <a href="{{ route('negocio', $negocio->slug) }}"class="mititle"><i class="fa-solid fa-circle-left fa-2xl"></i></a>
+    </div>  
+    <div id="micart2">
+      <a href="#" onclick="micart()">
+        <div class="icon-wrap icon-xs round text-light" style="background-color: #0E2944">
+        <i class="fa-solid fa-cart-arrow-down"></i>
+        <span class="notify" style="background-color: #E12D47"><div id="micart_count"></div></span>	
+        </div>
+      </a>
+    </div>  
   </nav>
-</div>
-
+  <div id="mireload">
     @php
       $negocio= App\Negocio::find($producto->negocio_id);
     @endphp
-
     @if ($negocio->estado)        
       <div class="card">
         <div class="row no-gutters">
@@ -70,7 +54,7 @@
                 @if ($producto->endescuento)
                   <span class="badge-offer"><b> - {{ $producto->endescuento }}%</b></span>
                 @endif		
-                <img src="{{ ($producto->image!=null) ? Voyager::image($producto->thumbnail('cropped', 'image')) : asset('storage/'.setting('productos.img_default_producto')) }}" alt="{{$producto->nombre}}" width="100%">
+                <img class="img-thumbnail rounded" src="{{ ($producto->image!=null) ? Voyager::image($producto->thumbnail('cropped', 'image')) : Voyager::image($negocio->thumbnail('perfil', 'logo')) }}" alt="{{$producto->nombre}}" width="100%">
               </div>
             </article>
           </aside>
@@ -136,7 +120,7 @@
                     <td>
                       Cantidad:
                       <select id="micant" class="form-control">
-                        @for ($i = 1; $i < 9; $i++)
+                        @for ($i = 1; $i < 7; $i++)
                           <option value="{{ $i }}"> {{ $i }} </option>   
                         @endfor
                       </select>
@@ -167,13 +151,34 @@
                           @endphp
                           <select id="miextras" class="form-control" multiple>
                             @foreach ($extras as $item)
-                                <option value="{{ $item->precio }}">{{ $item->nombre.' '.$item->precio }} Bs</option>
+                                <option value="{{ $item->id }}">{{ $item->nombre.' '.$item->precio }}Bs</option>
                             @endforeach
                           </select>
-                          <p style="text-align: justify; font-size: 11px;">Si desea agregar extras distintos a cada producto, agréguelos al carrito individualmente porfavor, esto es para distinguir que extras van en cada producto.</p>
+                          <p style="text-align: center; font-size: 12px;">Si desea agregar extras distintos a cada producto, agréguelos al carrito individualmente porfavor, esto es para distinguir que extras van en cada producto.</p>
                         </td>
                       </tr>
                     @endif
+                    @if ($producto->cocciones)  
+                    <tr>
+                      <td colspan="2">
+                        Elije un coccion:
+                        @php
+                            $cocciones = App\Coccione::where('negocio_id', $negocio->id)->get();
+                        @endphp
+                        <select id="micoccion" class="form-control">
+                          @foreach ($cocciones as $item)
+                              <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                          @endforeach
+                        </select>
+                      </td>
+                    </tr>
+                  @endif
+                  <tr>
+                    <td colspan="2">
+                      Mensaje al negocio:
+                      <input type="text" class="form-control" id="mensajenegocio">
+                    </td>
+                  </tr>
                   <tr>        
                     <td>
                       Total Bs:
@@ -197,10 +202,10 @@
             <div class="slick-slider" data-slick='{"slidesToShow": 3, "slidesToScroll": 3}'>
               @foreach ($productos as $item)
                 @if ($item->id != $producto->id)                                         
-                  <a href="{{ route('producto', [$negocio->slug, $item->slug]) }}">
+                  <a onclick="mireload()" href="{{ route('producto', [$negocio->slug, $item->slug]) }}">
                     <div class="item-slide p-1">
                       <figure class="card card-product">
-                        <div class="img-wrap"> <img src="{{ ($item->image!=null) ? Voyager::image($item->thumbnail('cropped', 'image')) : Voyager::image(setting('productos.img_default_producto')) }}"> </div>
+                        <div class="img-wrap"> <img src="{{ ($item->image!=null) ? Voyager::image($item->thumbnail('cropped', 'image')) : Voyager::image($negocio->thumbnail('perfil', 'logo'))}}"> </div>
                           <h6 class="mititle text-truncate">{{ $item->nombre }}</h6>
                       </figure>
                     </div>
@@ -210,40 +215,41 @@
             </div>
           </div>
       </div>
-
-      {{-- section comentarios  --}}
-      <div class="text-center">
-        <h4 class="text-center mitext"><i class="fa-solid fa-share-from-square"></i> Compartir</h4>
-        <div class="ss-box ss-circle text-center" data-ss-content="false"></div>
-        <div class="fb-comments" data-href="{{ route('producto',[$negocio->slug, $producto->slug]) }}" data-width="100%" data-numposts="5"></div>
-      </div>
     @else
         <h4 class="text-center mitext m-3">Negocio Cerrado</h4>
     @endif
+  </div>
+</div>
 @endsection
 @section('javascript')
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="{{ asset('js/social-share.js') }}" crossorigin="anonymous"></script>
   <script>
+
   var toastr = new Toastr({});
 	$(document).ready( function(){
-    $('#precio_producto').val('{{$producto->precio}}')  		
-		localStorage.setItem('extras', JSON.stringify([]));
+    // $("#mireload").html("<div class='text-center'><img src='/reload.gif' alt='mireload' class='img-fluid m-2 p-2' width='200'></div>")    
+     
+    console.log( "ready!" );
+    $('#precio_producto').val('{{$producto->precio}}')  	
     mitotal()
-    
+    // $("#mireload").empty();
 	});
 
   function mitotal() {
     var total = 0
     var textras = 0
-    $("#miextras :selected").map(function(i, el) {
-      textras += parseFloat($(el).val())
-    }).get();
-    total = parseFloat($("#miprecio").val()) * parseInt($("#micant").val())
-    total += textras
-    // console.log($("#miprecio").val())
-    $('#total_producto').html("<h2 class='mitext text-center'>"+formatMoney(total, ".", ",")+"</h2>")
-    return total
+    var miextra = 0
+    @if($producto->extras)
+      $("#miextras :selected").map(async function(i, el) {
+        var miextra = await axios('https://appxi.net/api/app/extra/by/'+$(el).val()) 
+        textras += parseFloat(miextra.data.precio)
+        total = (parseFloat($("#miprecio").val()) * parseInt($("#micant").val())) + textras
+        $('#total_producto').html("<h2 class='mitext text-center'>"+formatMoney(total, ".", ",")+"</h2>")
+      }).get();
+    @else
+      total = (parseFloat($("#miprecio").val()) * parseInt($("#micant").val()))  
+      $('#total_producto').html("<h2 class='mitext text-center'>"+formatMoney(total, ".", ",")+"</h2>")
+    @endif
+    // return total
   }
 
   function formatMoney(number, decPlaces, decSep, thouSep) {
@@ -262,48 +268,51 @@
 
   $('#miprecios').on('change', async function(){
     $("#miprecio").val(this.value)
-    // console.log(this.value)
       mitotal()
   });
 
   $('#micant').on('change', async function(){
     if (this.value > 1) {
-      console.log(this.value)
       $("#miextras").attr("hidden", true) 
     }else{
       $("#miextras").attr("hidden", false) 
     }
-      mitotal()
+    mitotal()
   });
 
-  $('#miextras').on('change', async function(){
-    var miselect = []
-    $("#miextras :selected").map(function(i, el) {
-      miselect.push($(el).val())
-    }).get()
+  $('#miextras').on('change', function(){
+    // var miselect = []
+    // $("#miextras :selected").map(function(i, el) {
+    //   miselect.push($(el).val())
+    // }).get()
+    console.log('miselect')
     mitotal()
   });
 
   async function agregar_carrito()
   {
-    if (mitotal() == 0) {
-      toastr.show("Agrega una cantidad o precio.")
+    // $("#mireload").html("<div class='text-center'><img src='/reload.gif' alt='mireload' class='img-fluid m-2 p-2' width='200'></div>")
+    if ($("#miprecio").val() == 0) {
+      toastr.show("Agrega un precio, por favor")
+
     } else {       
       @if(Auth::user())
-      toastr.show("{{ $producto->nombre }}, agregado a tu carrito, revisa tu whatsapp.")
-      var miuser = await axios('https://appxi.net/api/app/cliente/by/user/{{ Auth::user()->id }}')
-      // console.log(miuser.data)
-      var data={
-          product_id: "{{ $producto->id }}",
-          product_name: "{{ $producto->nombre }}",
-          chatbot_id: miuser.data.chatbot_id,
-          precio: $("#miprecio").val(),
-          cantidad: parseInt($('#micant').val()),
-          negocio_id: "{{ $negocio->id }}",
-          negocio_name: "{{ $negocio->nombre }}"
+        toastr.show("{{ $producto->nombre }}, agregado a tu carrito.")
+        var miuser = await axios('https://appxi.net/api/app/cliente/by/user/{{ Auth::user()->id }}')
+        var data={
+            product_id: "{{ $producto->id }}",
+            product_name: "{{ $producto->nombre }}",
+            chatbot_id: miuser.data.chatbot_id,
+            precio: $("#miprecio").val(),
+            cantidad: parseInt($('#micant').val()),
+            negocio_id: "{{ $negocio->id }}",
+            negocio_name: "{{ $negocio->nombre }}",
+            @if ($producto->cocciones)  
+            coccion_id: $('#micoccion').val(),
+            @endif
+            mensaje: $('#mensajenegocio').val()
         }
         var carrito = await axios.post("{{setting('admin.url')}}api/chatbot/cart/add", data)
-        // console.log(carrito.data)
         @if($producto->extra)
           var miselect = []
           $("#miextras :selected").map(function(i, el) {
@@ -321,22 +330,35 @@
             await axios.post("{{setting('admin.url')}}api/carrito/add/extras", midata)	
           }	
         @endif
-        var list = "{{ $producto->nombre }}, agregado a tu carrito\n"
-        list += '*A* .- Enviar pedido\n'  
-        list += '*B* .- Seguir comprando\n'
-        list += '*C* .- Vaciar Carrito\n'
-        list += '----------------------------------\n'
-        list += 'Envía una opción (ejemplo: *A*)'
-        await axios.post("https://delivery-chatbot.appxi.net/newproduct", {
-            phone: miuser.data.chatbot_id,
-            message: list
-          })
-          // toastr.show("{{ $producto->nombre }}, agregado a tu carrito, revisa tu whatsapp.")
-          location.href="/{{ $negocio->slug }}"
+        // var list = "{{ $producto->nombre }}, agregado a tu carrito\n"
+        // list += '*A* .- Enviar pedido\n'  
+        // list += '*B* .- Seguir comprando\n'
+        // list += '*C* .- Vaciar Carrito\n'
+        // list += '----------------------------------\n'
+        // list += 'Envía una opción (ejemplo: *A*)'
+        // await axios.post("https://delivery-chatbot.appxi.net/newproduct", {
+        //     phone: miuser.data.chatbot_id,
+        //     message: list
+        // })
+        // var micant_count = parseInt(localStorage.getItem("micart")) + parseInt($('#micant').val())
+        // localStorage.setItem('micart', micant_count)
+        location.href="/{{ $negocio->slug }}"
       @else
-        location.href = '/perfil'
+        $("#milogin").modal()
+        // localStorage.setItem('mivolver', "{{ route('producto', [$negocio->slug, $producto->slug]) }}")
+        // location.href = '/perfil'
       @endif
     }
   }
+
+
+  function mireload() {
+    $("#mireload").html("<div class='text-center'><img src='/reload.gif' alt='mireload' class='img-fluid m-2 p-2' width='200'></div>")    
+  }
+
+  // function miperfil(){
+  //   localStorage.setItem('mivolver', "{{ route('producto', [$negocio->slug, $producto->slug]) }}")
+  //   location.href = '/perfil'
+  // }
   </script>
 @endsection

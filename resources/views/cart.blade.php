@@ -12,7 +12,7 @@
 				</div>
 			</nav>
 			<div id="mibody"></div>		
-			<h4 class="mitext text-center">en desarrollo</h4>
+			<h1>Carrito</h1>
 		</div>
 @endsection
 

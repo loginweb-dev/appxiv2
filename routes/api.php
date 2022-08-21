@@ -113,7 +113,9 @@ Route::post('chatbot/cart/add', function (Request $request) {
         'precio' => $request->precio,
         'cantidad' => $request->cantidad,
         'negocio_id' => $request->negocio_id,
-        'negocio_name' =>$request->negocio_name
+        'negocio_name' => $request->negocio_name,
+        'coccion_id' =>  $request->coccion_id,
+        'mensaje'=> $request->mensaje
     ]);
     return $cart;
 });
@@ -581,6 +583,15 @@ Route::post('reset/pw/mensajero', function(Request $request){
     return $user;
 });
 
+//Restablecer Password Negocios--
+Route::post('reset/pw/negocio', function(Request $request){
+    $negocio= Negocio::where('chatbot_id', $request->phone)->first();
+    $user=User::find($negocio->user_id);
+    $user->password=Hash::make($request->password);
+    $user->save();
+    return $user;
+});
+
 //Get User
 Route::get('user/{id}', function($id){
     return User::find($id);
@@ -884,9 +895,16 @@ Route::group(['prefix' => 'app'], function () {
     Route::get('cliente/by/user/{user_id}', function ($user_id) {
         return Cliente::where('user_id', $user_id)->first();
     });
+
+            //get extra
+            Route::get('extra/by/{id}', function($id){
+                return Extraproducto::find($id);
+            });
+
+            
 });
 
-//Rutas APP --------------------------------
+//Rutas chatbot --------------------------------
 Route::group(['prefix' => 'chatbot'], function () {
     //Añadir Puntuacion del Pedido
     Route::post('pedido/puntuacion', function(Request $request){
@@ -906,5 +924,23 @@ Route::group(['prefix' => 'chatbot'], function () {
             return $pedido;
         }
     });
+    //Cambiar a Pedido Pagado
+    Route::get('pedido/pago/estado/{id}', function($id){
+        $pedido=Pedido::find($id);
+        $pedido->estado_pago=1;
+        $pedido->save();
+        return $pedido=Pedido::find($id);
+    });
 
+
+});
+
+Route::group(['prefix' => 'achatbot'], function () {
+    //Desactivar un Producto del Negocio
+    Route::get('producto/negocio/desactivar/{id}', function($id){
+        $producto=Producto::find($id);
+        $producto->ecommerce= $producto->ecommerce ? false : true;
+        $producto->save();
+        return Producto::find($id);
+    });
 });

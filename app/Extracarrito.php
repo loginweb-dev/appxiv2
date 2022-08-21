@@ -17,4 +17,9 @@ class Extracarrito extends Model
         'carrito_id',
         'producto_id',
     ];
+
+    public function extra()
+    {
+        return $this->belongsTo(Extraproducto::class, 'extra_id');
+    }
 }

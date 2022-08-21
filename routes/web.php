@@ -65,36 +65,63 @@ Route::get('cliente/{phone}', function ($phone) {
 });
 
 Route::get('setauth/{user_id}', function ($user_id) {
-    // return $user_id;
-    // if(Auth::user()){
         $miuser = User::find($user_id);
         $micliente = Cliente::where('user_id', $user_id)->first();
         Auth::login($miuser);
         return view('perfil', compact('miuser', 'micliente'));
-    // } else {
-
-    //     return view('login');
-    // }  
 })->name('setauth');
 
 
-Route::get('milogout', function () {
+Route::get('/milogout', function () {
     Auth::logout();
-    return view('login');
+    $localidades = App\Poblacione::all();
+    return view('sesiones.home', compact('localidades'));
 })->name('milogout');
 
 
-Route::get('/perfil', function () {
-    // return 'mierda';
-    if(Auth::user()){
-        $miuser = User::find(Auth::user()->id);
-        $micliente = Cliente::where('user_id', Auth::user()->id)->with('pedidos')->first();
-        return view('perfil', compact('miuser', 'micliente'));
-    } else {
-        return view('login');
-    }    
+Route::get('/history', function (Request $request) {
+    $miuser = User::find($request->user_id);
+    $micliente = Cliente::where('user_id', $request->user_id)->with('pedidos')->first();
+    return view('sesiones.history', compact('miuser', 'micliente'));
+})->name('history');
+
+Route::get('/misession', function (Request $request) {
+    $miuser = User::find($request->user_id);
+    Auth::login($miuser);
+    $micliente = Cliente::where('user_id', Auth::user()->id)->with('pedidos')->first();
+    return view('sesiones.history', compact('miuser', 'micliente'));
+})->name('misession');
+
+Route::get('/login', function () {
+    $localidades = App\Poblacione::all();
+    return view('sesiones.login', compact('localidades'));
+})->name('login');
+
+Route::get('/help', function () { 
+    return view('help');
+})->name('help');
+
+Route::get('/cart', function () { 
+    return view('cart');
+})->name('cart');
+
+Route::get('/mapaset', function () { 
+    return view('maps.set');
+})->name('mapaset');
+
+
+Route::get('/perfil', function () { 
+    return view('sesiones.home');
 })->name('perfil');
 
+Route::group(['prefix' => 'carrito'], function () {
+    Route::get('/list/{chatbot_id}', function ($chatbot_id) {
+        return view('carritos.list');
+    })->name('carritos.list');
+    Route::get('/confirm/{chatbot_id}', function ($chatbot_id) {
+        return view('carritos.confirm');
+    })->name('carritos.confirm');
+});  
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
     Route::get('/mispedidos/{id}', function ($id) {

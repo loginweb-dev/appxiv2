@@ -11,12 +11,12 @@ Documentation URI: https://www.voidtricks.com/toastr/
     left: 50%;
     margin-left: -250px;
     text-align: center;
-    background: #2d2d2dc2;
+    background: #0D2845;
     font-family: sans-serif;
     color: #fff;
-    padding: 15px 20px;
-    border-radius: 25px;
-    font-size: 18px;
+    padding: 10px 10px;
+    border-radius: 20px;
+    font-size: 14px;
     box-sizing: border-box;
     text-shadow: 0 0 2px #383737;
     opacity: 0;

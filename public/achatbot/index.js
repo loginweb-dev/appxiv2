@@ -10,6 +10,7 @@ const JSONdb = require('simple-json-db');
 const status = new JSONdb('json/status.json');
 const users = new JSONdb('json/users.json');
 const pedidos = new JSONdb('json/pedidos.json');
+const producto_buscado = new JSONdb('json/producto_buscado.json');
 require('dotenv').config({ path: '../../.env' })
 
 const app = express();
@@ -55,34 +56,35 @@ client.on("auth_failure", msg => {
 })
 
 client.on('message', async msg => {
-    console.log('MESSAGE RECEIVED', msg);    
+    console.log('MESSAGE RECEIVED', msg);
+    var mioption = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']    
     if (users.has(msg.from)) {
         if (msg.body === 'reset') {
             status.set(msg.from, 0)
         }
         if (msg.body==='test') {
-            // var pedido = pedidos.get(msg.from)
-            var mipedido = await axios(process.env.APP_URL+'api/pedido/'+5)
-            console.log(mipedido.data.ubicacion)
-            // var mapa= new Location(-14.8000014, -64.8703225, "Al frente de X")
-            // console.log(mapa)
-            // client.sendMessage(msg.from, "Ubicacion")
-            // client.sendMessage(msg.from, mapa)
+            // // var pedido = pedidos.get(msg.from)
+            // var mipedido = await axios(process.env.APP_URL+'api/pedido/'+5)
+            // console.log(mipedido.data.ubicacion)
+            // // var mapa= new Location(-14.8000014, -64.8703225, "Al frente de X")
+            // // console.log(mapa)
+            // // client.sendMessage(msg.from, "Ubicacion")
+            // // client.sendMessage(msg.from, mapa)
             
-            var ubicacion=''
-            ubicacion +='Ubicación del Cliente: '+mipedido.data.cliente.nombre+'\n'
-            ubicacion+= 'http://maps.google.com/maps?&z=12&mrt=yp&t=k&q='+mipedido.data.ubicacion.latitud+'+'+mipedido.data.ubicacion.longitud+'\n'
-            ubicacion+='Descripción: '+mipedido.data.ubicacion.detalles
-            client.sendMessage(msg.from, ubicacion)
+            // var ubicacion=''
+            // ubicacion +='Ubicación del Cliente: '+mipedido.data.cliente.nombre+'\n'
+            // ubicacion+= 'http://maps.google.com/maps?&z=12&mrt=yp&t=k&q='+mipedido.data.ubicacion.latitud+'+'+mipedido.data.ubicacion.longitud+'\n'
+            // ubicacion+='Descripción: '+mipedido.data.ubicacion.detalles
+            // client.sendMessage(msg.from, ubicacion)
 
-            var send_negocios= await negocios_pedido(5)
-            console.log(send_negocios)
-            for (let index = 0; index < send_negocios.length; index++) {
-                ubicacion=''
-                ubicacion+=' Ubicación del Negocio: '+send_negocios[index].nombre+'\n'
-                ubicacion+= 'http://maps.google.com/maps?&z=12&mrt=yp&t=k&q='+send_negocios[index].latitud+'+'+send_negocios[index].longitud
-                client.sendMessage(msg.from, ubicacion)
-            }
+            // var send_negocios= await negocios_pedido(5)
+            // console.log(send_negocios)
+            // for (let index = 0; index < send_negocios.length; index++) {
+            //     ubicacion=''
+            //     ubicacion+=' Ubicación del Negocio: '+send_negocios[index].nombre+'\n'
+            //     ubicacion+= 'http://maps.google.com/maps?&z=12&mrt=yp&t=k&q='+send_negocios[index].latitud+'+'+send_negocios[index].longitud
+            //     client.sendMessage(msg.from, ubicacion)
+            // }
            
         }
         var miuser = users.get(msg.from)
@@ -126,7 +128,41 @@ client.on('message', async msg => {
                         list+='No comparta sus credenciales con nadie'
                         client.sendMessage(msg.from, list)
 
-                    }else{
+                    }
+                    else if(msg.body.toUpperCase() === 'D'){
+                        var midata1 = await fecha_inicial()
+                        console.log(midata1)
+                        var midata2 = await fecha_final()
+                        console.log(midata2)
+                        var mensajero_id = users.get(msg.from).id
+                        var midata = JSON.stringify({
+                            date1: midata1,
+                            date2: midata2,
+                            mensajero_id: mensajero_id
+                        })
+
+                        var table= await axios(process.env.APP_URL+'api/ventas/fechas/mensajero/'+midata)
+
+                        list = '*EXTRACTO DEL DIA:*\n'
+                        list +='--------------------------------------\n'
+                        list +='*Información Resumen*:\n'
+                        list +='Total Ventas Bs: '+table.data.total+' \n'
+                        list +='Total para Appxi: '+table.data.total_negocio+'\n'
+                        list +='Total para el Delivery: '+table.data.total_delivery+'\n'
+                        list +='--------------------------------------\n'
+                        list +='*Información a Detalle*:\n'
+                        list +='Total Ventas Bs: '+table.data.total+'\n'
+                        list +='Total Cantidad de Ventas: '+table.data.cantidad_total+'\n'
+                        list +='Ventas en Efectivo Bs: '+table.data.total_efectivo+'\n'
+                        list +='Cantidad de Ventas en Efectivo: '+table.data.cantidad_efectivo+'\n'
+                        list +='Ventas con Banipay Bs: '+table.data.total_banipay+'\n'
+                        list +='Cantidad de Ventas en Banipay: '+table.data.cantidad_banipay+'\n'
+                        list +='Total a Pagar al Delivery: '+table.data.total_delivery+'\n'
+                        list +='Total para Appxi: '+table.data.total_negocio+'\n'
+
+                        client.sendMessage(msg.from, list)
+                    }
+                    else{
                         menu_mensajero(msg.from)
                     }
                     break;
@@ -216,7 +252,16 @@ client.on('message', async msg => {
                 case 1: //para recoger
                     if (msg.body.toUpperCase() === 'A') {
                         var pedido = pedidos.get(msg.from)
-
+                        var mipedido=await axios(process.env.APP_URL+'api/pedido/'+pedido.id)
+                        var validacion=0
+                        if (mipedido.data.pago_id>1) {
+                            if (mipedido.data.estado_pago==1) {
+                                validacion=1
+                            }
+                            else{
+                                validacion=2
+                            }
+                        }
                         //Ubicacion del Cliente al Mensajero
                         var ubicacion=''
                         ubicacion +='Ubicación del Cliente: '+pedido.cliente.nombre+'\n'
@@ -229,7 +274,15 @@ client.on('message', async msg => {
                         mitext+= '------------------------------------------\n'
                         mitext+= '*A* .- Ya entregué el pedido\n'
                         mitext+= '------------------------------------------\n'
-                        mitext+= 'Envía una opción (ejemplo: *A*)'
+                        mitext+= 'Envía una opción (ejemplo: *A*)\n'
+                        if (validacion==1) {
+                            mitext+= '------------------------------------------\n'
+                            mitext+= '*PEDIDO PAGADO CORRECTAMENTE*'
+                        }
+                        else if (validacion==2) {
+                            mitext+= '------------------------------------------\n'
+                            mitext+= '*PEDIDO AUN NO PAGADO*'
+                        }
                         status.set(msg.from, 2)
                         client.sendMessage(msg.from, mitext)
                         // var locaton= new Location(pedido.ubicacion.latitud, pedido.ubicacion.longitud, pedido.ubicacion.detalles)
@@ -296,24 +349,37 @@ client.on('message', async msg => {
                 case 2: //para q entregar
                     if (msg.body.toUpperCase() === 'A') {
                         var pedido = pedidos.get(msg.from)
-                        var mitext=''
-                        mitext += 'El pedido *#'+pedido.id+'* fue entregado al cliente *'+pedido.cliente.nombre+'* correctamente, espera que el cliente confirme el mismo.'
-                        client.sendMessage(msg.from, mitext)
-                        mitext=''
-                        mitext += 'El delivery confirmo que tu pedido ya fue entregado\n'
-                        mitext = 'Ya llego tu pedido *#'+pedido.id+'* ?\n'
-                        mitext += '*A* .- Si llegó\n'
-                        mitext += '*B* .- No llegó\n'
-                        mitext += '----------------------------------\n'
-                        mitext += 'Envia una opción (ejemplo: *A*)'         
-                        //client.sendMessage(pedido.chatbot_id, mitext)
-                        //CLIENTE
-                        await axios.post(process.env.CHATBOT_URL+'cart', {
-                            phone: pedido.chatbot_id,
-                            message: mitext,
-                            status:2
-                        })  
-                         status.set(msg.from, 2.1)
+                        var mipedido=await axios(process.env.APP_URL+'api/pedido/'+pedido.id)
+                        var validacion=false
+                        if (mipedido.data.pago_id==1 || mipedido.data.estado_pago==1) {
+                            validacion=true
+                        }
+
+                        if (validacion) {
+                            var mitext=''
+                            mitext += 'El pedido *#'+pedido.id+'* fue entregado al cliente *'+pedido.cliente.nombre+'*, espera que el cliente confirme.'
+                            client.sendMessage(msg.from, mitext)
+                            mitext=''
+                            mitext += 'El delivery confirmó que tu pedido ya fue entregado\n'
+                            mitext = 'Ya llegó tu pedido *#'+pedido.id+'* ?\n'
+                            mitext += '*A* .- Si llegó\n'
+                            mitext += '*B* .- No llegó\n'
+                            mitext += '----------------------------------\n'
+                            mitext += 'Envia una opción (ejemplo: *A*)'         
+                            //client.sendMessage(pedido.chatbot_id, mitext)
+                            //CLIENTE
+                            await axios.post(process.env.CHATBOT_URL+'cart', {
+                                phone: pedido.chatbot_id,
+                                message: mitext,
+                                status:2
+                            })  
+                             status.set(msg.from, 2.1)
+                        }
+                        else{
+                            client.sendMessage(msg.from, 'El pedido aun no ha sido pagado, pide al cliente que mande el comprobante para que el Sistema verifique la Transacción.')
+                        }
+
+                       
                     } else {
                         client.sendMessage(msg.from, 'Envia una opción valida') 
                     }
@@ -322,9 +388,7 @@ client.on('message', async msg => {
                         client.sendMessage(msg.from, 'Espere que el cliente confirme la llegada del Pedido.')
                         break;       
                     case 2.2://Pedido Faltante Segun Cliente
-
-                        client.sendMessage(msg.from, 'Estás en estado de espera porque el Cliente no confirmó la llegada de su pedido.')
-
+                        client.sendMessage(msg.from, 'Estás en estado de espera porque el Cliente dió aviso que no llegó su pedido.\n El administrador se pondrá en contacto contigo.')
                         break
                     
 
@@ -332,11 +396,136 @@ client.on('message', async msg => {
                     //client.sendMessage(msg.from, 'Interactuando como '+micliente.data.modo+'\nEstate atento al proximo pedido.')
                     break;
             }
-        }else if(miuser.user.role_id == 5) {
+        }else if(miuser.user.role_id == 3) {
+            if (msg.body.toUpperCase()=='MENU') {
+                status.set(msg.from, 0)
+            }
             switch (status.get(msg.from)) {
-                case 0:
+                case 0: //Opciones Principales del Menu
+                    if (msg.body.toUpperCase() === 'A'){
+                        await axios(process.env.APP_URL+'api/negocio/update/'+msg.from)
+                        menu_negocio(msg.from)
+                    }
+                    else if (msg.body.toUpperCase() === 'B'){
+                        var newpassword=Math.random().toString().substring(2, 8)
+                        var phone= msg.from
+                        var midata={
+                          phone:phone,
+                          password:newpassword
+                        }
+                        var usuario= await axios.post(process.env.APP_URL+'api/reset/pw/negocio', midata)
+                        var list=''
+                        list+='Credenciales para Ingresar al Sistema:\n'
+                        list+='Correo: '+usuario.data.email+' \n'
+                        list+='Contraseña: '+newpassword+' \n'
+                        list+='No comparta sus credenciales con nadie'
+                        client.sendMessage(msg.from, list)
+                    }
+                    else if(msg.body.toUpperCase() === 'C'){
+                        list = 'Envía el Nombre del Producto para buscarlo\n'
+                        list += 'Ejemplo: *Producto X*\n'
+                        list +='--------------------------------------\n'
+                        list +='*MENU*.- Volver al Menú Principal'
+                        client.sendMessage(msg.from, list)
+                        status.set(msg.from, 1)
+                    }
+                    else if(msg.body.toUpperCase() === 'D'){
 
-                    break;        
+                        var midata1 = await fecha_inicial()
+                        console.log(midata1)
+                        var midata2 = await fecha_final()
+                        console.log(midata2)
+                        var negocio_id = users.get(msg.from).id
+                        var midata = JSON.stringify({
+                            date1: midata1,
+                            date2: midata2,
+                            negocio_id: negocio_id
+                        })
+            
+                        var table= await axios(process.env.APP_URL+'api/reporte/fechas/negocio/'+midata)
+                        var total_negocio= (parseFloat(table.data.total_efectivo)-(parseFloat(table.data.total_efectivo)*0.02))+(parseFloat(table.data.total_banipay)-(parseFloat(table.data.total_banipay)*0.04))
+                        var total_negocio=Math.round(total_negocio)
+                        var total_godelivery=parseFloat(table.data.total)-total_negocio
+
+                        list = '*EXTRACTO DEL DIA:*\n'
+                        list +='--------------------------------------\n'
+                        list +='*Información Resumen*:\n'
+                        list +='Total Ventas Bs: '+table.data.total+' \n'
+                        list +='Total para Appxi: '+total_godelivery+'\n'
+                        list +='Total para el Negocio: '+total_negocio+'\n'
+                        list +='--------------------------------------\n'
+                        list +='*Información a Detalle*:\n'
+                        list +='Total Ventas Bs: '+table.data.total+'\n'
+                        list +='Total Cantidad de Ventas: '+table.data.cantidad_total+'\n'
+                        list +='Ventas en Efectivo Bs: '+table.data.total_efectivo+'\n'
+                        list +='Cantidad de Ventas en Efectivo: '+table.data.cantidad_efectivo+'\n'
+                        list +='Ventas con Banipay Bs: '+table.data.total_banipay+'\n'
+                        list +='Cantidad de Ventas en Banipay: '+table.data.cantidad_banipay+'\n'
+                        list +='Total a Pagar al Negocio: '+total_negocio+'\n'
+                        list +='Total para Appxi: '+total_godelivery+'\n'
+
+                        client.sendMessage(msg.from, list)
+                    }
+                    else{
+                        menu_negocio(msg.from)
+                    }
+
+                    break;
+                case 1://Lista de Productos del Resultado de la Busqueda para Activar o Desactivar
+                    if (msg.body.toUpperCase() != 'RESET' && msg.body.toUpperCase()!= 'MENU' ){
+                        var criterio= msg.body
+                        var resultado= await axios.post(process.env.APP_URL+'api/search/producto/negocio/chatbot', {
+                            negocio_id: users.get(msg.from).id,
+                            criterio: criterio
+                        })
+
+                        if (resultado.data.length>0) {
+                            var vector=[]
+                            var list = '*Resultado de Búsqueda*\n'
+                            for (let index = 0; index < resultado.data.length; index++) {
+                                var estado= (resultado.data[index].ecommerce === '1') ? 'Activado' : 'Desactivado'
+                                list += '*'+mioption[index]+'* .- '+resultado.data[index].nombre+' ('+estado+')\n'
+                                vector.push({option: mioption[index], producto:resultado.data[index]})
+                            }
+                            list += '------------------------------------\n'
+                            list += 'Envía una opción (ejemplo: *A*)\n'
+                            list +='--------------------------------------\n'
+                            list +='*MENU*.- Volver al Menú Principal'
+                            status.set(msg.from, 1.1)
+                            producto_buscado.set(msg.from, vector)
+                            client.sendMessage(msg.from, list) 
+                        }
+                        else{
+                            client.sendMessage(msg.from, 'No se encontraron productos relacionados.')
+                        }
+                    }
+                    break;
+                case 1.1: //Activando o Desactivando Producto
+                    if (msg.body.toUpperCase() != 'RESET' && msg.body.toUpperCase()!= 'MENU'){
+                        var validar = false
+                        var miproductos= producto_buscado.get(msg.from)
+                        var miproducto= ''
+                        for (let index = 0; index < miproductos.length; index++) {
+                            if (miproductos[index].option === msg.body.toUpperCase()) {
+                                miproducto=miproductos[index].producto
+                                console.log(miproducto)
+                                validar = true
+                                break;
+                            }
+                        }
+                        if (validar) {
+                            console.log('Hola')
+                           var desactivar= await axios(process.env.APP_URL+'api/achatbot/producto/negocio/desactivar/'+miproducto.id)
+                           var estado= (desactivar.data.ecommerce === '1') ? 'Activado' : 'Desactivado'
+                           list='Producto: *'+desactivar.data.nombre+'* '+estado+' correctamente.'
+                           client.sendMessage(msg.from, list) 
+                           status.set(msg.from, 0)
+                        }
+                        else{
+                            client.sendMessage(msg.from, 'Envía una opción válida')
+                        }
+                    }
+                    break;
                 default:
                     client.sendMessage(msg.from, 'Envia una opción valida')
                     break;
@@ -346,10 +535,21 @@ client.on('message', async msg => {
     } else {
         var miuser = await axios(process.env.APP_URL+'api/user/get/phone/'+msg.from)
         if (miuser.data) {
-            users.set(msg.from, miuser.data)
-            status.set(msg.from, 0)
-            // client.sendMessage(msg.from, 'Bienvenido a appxi.net')
-            menu_mensajero(msg.from)
+            if (miuser.data.user!=null) {
+                users.set(msg.from, miuser.data)
+                status.set(msg.from, 0)
+                // client.sendMessage(msg.from, 'Bienvenido a appxi.net')
+                if (miuser.data.user.role_id==4) {
+                    menu_mensajero(msg.from)
+                }
+                else{
+                    menu_negocio(msg.from)
+                }
+            }
+            else {
+                client.sendMessage(msg.from, 'No tiene un Usuario Vinculado a su registro, contáctese con el Administrador.')
+            }
+          
         } else {
             client.sendMessage(msg.from, 'No tiene registro.')
         }
@@ -390,13 +590,15 @@ app.post('/update', (req, res) => {
     var mistatus = req.body.status!='undefined' ? req.body.status : req.query.status
     //var micliente = await axios(process.env.APP_URL+'api/cliente/'+phone)
     // client.sendMessage(phone, message)
-    console.log(req.body)
-    console.log(req.body.status)
-    console.log(req.query.status)
-    console.log(phone)
-    console.log(message)
-    console.log(mistatus)       
+     
     status.set(phone, mistatus)
+    res.send('Mensaje Enviado') 
+});
+
+app.post('/reset/mensajero', (req, res) => {
+    var phone = req.body.phone!='undefined' ? req.body.phone : req.query.phone
+    var mistatus = req.body.mistatus!='undefined' ? req.body.mistatus : req.query.mistatus
+    reset_mensajero(phone, mistatus)
     res.send('Mensaje Enviado') 
 });
 
@@ -412,8 +614,9 @@ const menu_mensajero = async (phone) => {
     list += '*Deliverys :* '+michofer.data.pedidos.length+'\n'
     list += '----------------------------------\n'
     list += '*A* .- Ver pedidos en cola\n'
-    list += '*B* .- Cambiar de estado (envia el emoji - libre/ocupado)\n'
+    list += '*B* .- Cambiar de estado (libre/ocupado)\n'
     list += '*C* .- Obtener Credenciales (panel)\n'
+    list += '*D* .- Ganancias del Día\n'
     list += '----------------------------------\n'
     list += 'Panel de administracion\n'
     list += process.env.APP_URL+'admin'
@@ -451,18 +654,73 @@ const menu_negocio = async (phone) => {
     list += '*Mi Negocio :* '+minegocio.data.nombre+'\n'
     list += '*Localidad :* '+minegocio.data.poblacion.nombre+'\n'
     list += '*Direccion :* '+minegocio.data.direccion+'\n'
-    list += '*Productos :* '+minegocio.data.productos.length+'\n'
     list += '*Contacto :* '+minegocio.data.contacto+'\n'
     list += '*Estado :* '+miestado+'\n'
     list += '----------------------------------\n'
-    list += '🔄 .- Cambiar de Estado (envia el emoji - Abierto/Cerrado)\n'
-    list += '⏪ .- VOLVER COMO CLIENTE\n'
+    list += '*A* .- Cambiar de estado (Abierto/Cerrado)\n'
+    list += '*B* .- Obtener Credenciales (panel)\n'
+    list += '*C* .- Desactivar/Activar un Producto\n'
+    list += '*D* .- Ganancias del Día\n'
     list += '----------------------------------\n'
     list += '*Mi Tienda en Linea*\n'
-    list += process.env.APP_URL+'negocio/'+minegocio.data.slug
+    list += process.env.APP_URL+minegocio.data.slug+'\n'
+    list += '----------------------------------\n'
+    list += 'Panel de administracion\n'
+    list += process.env.APP_URL+'admin'
     client.sendMessage(phone, list)
-    status_negocio.set(phone, 0)
+    status.set(phone, 0)
     return true
+}
+
+const sumarDias = async (fecha, dias) =>{
+    fecha.setDate(fecha.getDate() + dias);
+    return fecha;
+}
+
+const fecha_final = async () => {
+    var dia=""
+    var mes=""
+    var year=""
+
+    var fecha = new Date();
+    var fecha_funcion=await sumarDias(fecha, 1)
+    var dia=((fecha_funcion).getDate()).toString()
+    dia= dia.padStart(2,'0')
+    
+    var mes=((fecha_funcion).getMonth()+1).toString()
+    mes= mes.padStart(2,'0') 
+
+    var year=((fecha_funcion).getFullYear()).toString()
+    
+    var fecha_salida=""
+    fecha_salida= year+"-"+mes+"-"+dia
+    return fecha_salida;
+}
+const fecha_inicial = async () => {
+    var dia=""
+    var mes=""
+    var year=""
+
+    var fecha_funcion = new Date();
+    var dia=((fecha_funcion).getDate()).toString()
+    dia= dia.padStart(2,'0')
+    
+    var mes=((fecha_funcion).getMonth()+1).toString()
+    mes= mes.padStart(2,'0') 
+
+    var year=((fecha_funcion).getFullYear()).toString()
+    
+    var fecha_salida=""
+    fecha_salida= year+"-"+mes+"-"+dia
+    return fecha_salida;
+}
+const reset_mensajero = async (phone, mistatus) => {
+    status.set(phone, mistatus)
+    pedidos.delete(phone)
+    producto_buscado.delete(phone)
+    users.delete(phone)
+    client.sendMessage(phone, 'Su historial fue limpiado, puede realizar nuevos viajes.')
+    await axios(process.env.APP_URL+'api/mensajero/update/'+phone)
 }
 
 client.initialize();

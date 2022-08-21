@@ -2118,7 +2118,7 @@ ul.row, ul.row-sm {
   z-index: 10;
   padding: 2px 7px;
   font-size: 12px;
-  background-color: #ef5f5f;
+  background-color: #0C2746;
   color: #fff;
   border-radius: 4px; }
 
@@ -2129,7 +2129,7 @@ ul.row, ul.row-sm {
   right: 15px;
   z-index: 2; }
   .badge-offer b {
-    background: #ef5f5f;
+    background: #0C2746;
     padding: 4px;
     font-family: 'Bebas';
     font-weight: normal;
@@ -2141,7 +2141,7 @@ ul.row, ul.row-sm {
     width: 50px;
     position: relative; }
   .badge-offer b:after {
-    border-top: 7px solid #ef5f5f;
+    border-top: 7px solid #0C2746;
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
     content: "";

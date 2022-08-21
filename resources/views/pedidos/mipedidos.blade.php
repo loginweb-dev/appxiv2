@@ -516,23 +516,60 @@
             return fecha;
         }
 
-        function fechaFinal(midata2) {
+        function fecha_java_script(fecha){
             var dia=""
             var mes=""
             var year=""
 
-            var fecha = new Date(midata2);
-            var fecha_funcion=sumarDias(fecha, 2)
-            var dia=((fecha_funcion).getDate()).toString()
+            var dia=((fecha).getDate()).toString()
             dia= dia.padStart(2,'0')
             
-            var mes=((fecha_funcion).getMonth()+1).toString()
+            var mes=((fecha).getMonth()+1).toString()
             mes= mes.padStart(2,'0') 
 
-            var year=((fecha_funcion).getFullYear()).toString()
+            var year=((fecha).getFullYear()).toString()
             
             var fecha_salida=""
             fecha_salida= year+"-"+mes+"-"+dia
+            return fecha_salida;
+        }
+
+        function Comparar_Dia_Fecha(fecha){
+            var fecha_comparar= fecha_java_script(fecha)
+            var fecha_hoy = fecha_java_script(new Date())
+            if (fecha_hoy==fecha_comparar) {
+                var mod= sumarDias(fecha, 1);
+                mod= fecha_java_script(mod)
+                return mod;
+            }
+            else{
+                return fecha_comparar;
+            }
+        }
+
+        function fechaFinal(midata2) {
+            // var dia=""
+            // var mes=""
+            // var year=""
+
+            // var fecha = new Date(midata2);
+            // var fecha_funcion=sumarDias(fecha, 1)
+            // var dia=((fecha_funcion).getDate()).toString()
+            // dia= dia.padStart(2,'0')
+            
+            // var mes=((fecha_funcion).getMonth()+1).toString()
+            // mes= mes.padStart(2,'0') 
+
+            // var year=((fecha_funcion).getFullYear()).toString()
+            
+            // var fecha_salida=""
+            // fecha_salida= year+"-"+mes+"-"+dia
+            // return fecha_salida;
+
+            var fecha = new Date(midata2+'T00:00:00');
+            // var fecha_salida=Comparar_Dia_Fecha(fecha)
+            var fecha_salida=sumarDias(fecha, 1)
+            fecha_salida=fecha_java_script(fecha_salida)
             return fecha_salida;
         }
 
@@ -561,7 +598,7 @@
                 var year=""
 
                 var fecha = new Date();
-                var fecha_funcion=sumarDias(fecha, 2)
+                var fecha_funcion=sumarDias(fecha, 1)
                 var dia=((fecha_funcion).getDate()).toString()
                 dia= dia.padStart(2,'0')
                 

@@ -30,54 +30,34 @@
 	  {{-- -------------- UI MOVIL -------------- --}}
 	  <div class="d-block d-sm-none">
 		{{-- <nav class="navbar navbar-expand-sm sticky-top navbar-light justify-content-between" style="background-color: #F0F0F4;"> --}}
-            <nav class="navbar navbar-expand-sm sticky-top navbar-light justify-content-between" style="background-color: #F0F0F4;">
+            <nav class="navbar sticky-top navbar-light justify-content-center" style="background-color: #F0F0F4;">
                 <a class="navbar-brand" href="/">
                   <img src="storage/{{ setting('site.logo') }}" width="30" height="30" class="d-inline-block align-top" alt="">
                   {{ setting('site.title') }}
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-                  <i class="fa fa-list"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-                  <ul class="list-group list-group-flush mt-2 text-center mititle">
-                    <li class="list-group-item">
-                     <a class="mititle" href="/"> <i class="fa-solid fa-house-user"></i> Inicio</a>
-                    </li>
-                    <li class="list-group-item">
-                      <a class="mititle" href="/taxi/nuevo"> <i class="fa-solid fa-taxi"></i> Nuevo Viaje </a></li>
-                    {{-- <li class="list-group-item">
-                      <a class="mititle" href="/maps"><i class="fa-solid fa-location-crosshairs"></i> Cerca de Ti</a> 
-                    </li> --}}
-                    <li class="list-group-item">
-                      <a class="mititle" href="/perfil"> <i class="fa-solid fa-address-card"></i> Mi Perfil </a>
-                    </li>
-                  </ul>
-                </div>      
+                <div id="miback">
+                    <a href="#" onclick="mivolver()" class="" style=" color: #0C2746;"><i class="fa-solid fa-circle-left fa-2xl"></i></a>
+                </div>   
               </nav>
-              <div style="padding: 5px;" class="text-center">
-                <h3 class="text-center">Negocios y Comercios <br> Cerca de Ti</h3>
-                {{-- <form class="form-inline"> --}}
+              <div class="text-center">
+                
                     <table>
-                        <tr class="text-center">
-                            <td>
-                                {{-- <form class="form-inline"> --}}
-                                    {{-- <input list="browsers" class="form-control mr-sm-1" name="criterio" type="search" placeholder="Buscar negocio o comercio" aria-label="Buscar negocio o comercio" value=""> --}}
-                                    {{-- <datalist id="browsers"></datalist> --}}
-                                    <select id="minegocios" class="form-control">
-                                        <option value="0">Elige un Negocio</option>
-                                        @foreach ($negocios as $item)
-                                            @if (isset($_GET['negocio']))
-                                                <option value="{{ $item->id }}" @if($_GET['negocio'] == $item->id) selected @endif>{{ $item->nombre }}</option>
-                                            @else
-                                                <option value="{{ $item->id }}">{{ $item->nombre }}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                    <button class="btn miboton"  hidden><i class="fa fa-search"></i></button>
-                                {{-- </form> --}}
-                            </td>
+                        <tr>
                             <td width=50%>
-                                <form class="form-inline">
+                                <h6 class="text-center mitext p-2 m-2">Negocios y Comercios <br> Cerca de Ti</h6>                                    
+                            </td>
+                            <td>
+                                <select id="minegocios" class="form-control">
+                                    <option value="0">Elige un Negocio</option>
+                                    @foreach ($negocios as $item)
+                                        @if (isset($_GET['negocio']))
+                                            <option value="{{ $item->id }}" @if($_GET['negocio'] == $item->id) selected @endif>{{ $item->nombre }}</option>
+                                        @else
+                                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <button class="btn miboton"  hidden><i class="fa fa-search"></i></button>
                                 <select class="form-control" id="miradio">
                                     @if (isset($_GET['radio']))                                        
                                         <option value="0.5" @if($_GET['radio'] == 0.5) selected @endif>Radio 1/2 KM</option>
@@ -89,22 +69,16 @@
                                         <option value="4">Radio 4 KM</option>
                                     @endif
                                 </select>
-                                </form>
                             </td>
                         </tr>
                     </table>
                     <input type="number" id="milatitud" hidden>
                     <input type="number" id="milongitud" hidden>
-                {{-- </form> --}}
+   
               </div>
               <div id="mimap">
                 <div id="map"></div>
               </div>
-		
-		{{-- <div class="search-box">
-			<input id="pac-input" class="controls" type="search" placeholder="Buscar Negocio">
-			<button class="btn" id="doSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
-		  </div>  --}}
 	  </div>	
 @endsection
 
@@ -112,9 +86,8 @@
 
 <script>
     var toastr = new Toastr({});
-    // google maps -------------------
     var map;
-    var maker;
+    var marker;
     var options = {
         enableHighAccuracy: true,
         timeout: 5000,
@@ -140,145 +113,145 @@
     }
 
     async function set_origen(pos) {
-      const styledMapType = new google.maps.StyledMapType(
-        [
-      {
-          "featureType": "administrative",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "saturation": "-100"
-              }
-          ]
-      },
-      {
-          "featureType": "administrative.province",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "visibility": "off"
-              }
-          ]
-      },
-      {
-          "featureType": "landscape",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "saturation": -100
-              },
-              {
-                  "lightness": 65
-              },
-              {
-                  "visibility": "on"
-              }
-          ]
-      },
-      {
-          "featureType": "poi",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "saturation": -100
-              },
-              {
-                  "lightness": "50"
-              },
-              {
-                  "visibility": "simplified"
-              }
-          ]
-      },
-      {
-          "featureType": "road",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "saturation": "-100"
-              }
-          ]
-      },
-      {
-          "featureType": "road.highway",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "visibility": "simplified"
-              }
-          ]
-      },
-      {
-          "featureType": "road.arterial",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "lightness": "30"
-              }
-          ]
-      },
-      {
-          "featureType": "road.local",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "lightness": "40"
-              }
-          ]
-      },
-      {
-          "featureType": "transit",
-          "elementType": "all",
-          "stylers": [
-              {
-                  "saturation": -100
-              },
-              {
-                  "visibility": "simplified"
-              }
-          ]
-      },
-      {
-          "featureType": "water",
-          "elementType": "geometry",
-          "stylers": [
-              {
-                  "hue": "#ffff00"
-              },
-              {
-                  "lightness": -25
-              },
-              {
-                  "saturation": -97
-              }
-          ]
-      },
-      {
-          "featureType": "water",
-          "elementType": "labels",
-          "stylers": [
-              {
-                  "lightness": -25
-              },
-              {
-                  "saturation": -100
-              }
-          ]
-      }
-    ],
-      { name: "Styled Map" }
-    );
+        const styledMapType = new google.maps.StyledMapType(
+            [
+                {
+                    "featureType": "administrative",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "saturation": "-100"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative.province",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "saturation": -100
+                        },
+                        {
+                            "lightness": 65
+                        },
+                        {
+                            "visibility": "on"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "saturation": -100
+                        },
+                        {
+                            "lightness": "50"
+                        },
+                        {
+                            "visibility": "simplified"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "saturation": "-100"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "visibility": "simplified"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.arterial",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "lightness": "30"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.local",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "lightness": "40"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "saturation": -100
+                        },
+                        {
+                            "visibility": "simplified"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                            "hue": "#ffff00"
+                        },
+                        {
+                            "lightness": -25
+                        },
+                        {
+                            "saturation": -97
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                            "lightness": -25
+                        },
+                        {
+                            "saturation": -100
+                        }
+                    ]
+                }
+            ],
+        { name: "Styled Map" }
+        );
 
-    var crd = pos.coords
-    var radio = pos.accuracy
-    var myLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude }
-    map = new google.maps.Map(document.getElementById("map"), {
-        center: myLatLng,
-        mapTypeId: "terrain",
-        zoom: 14,
-        // disableDefaultUI: true,
-        mapTypeControl: false
-    });
+        var crd = pos.coords
+        var radio = pos.accuracy
+        var myLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: myLatLng,
+            mapTypeId: "terrain",
+            zoom: 14,
+            // disableDefaultUI: true,
+            mapTypeControl: false
+        });
 
 
 
@@ -393,5 +366,9 @@
         });
     });
   @endif
+  function mivolver() {
+			var mivolver = localStorage.getItem('mivolver')
+			location.href = mivolver
+		}
 </script>
 @endsection
