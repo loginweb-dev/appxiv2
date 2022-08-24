@@ -5,7 +5,11 @@ var qr = require('qr-image');
 var path = require('path');
 const cors = require('cors')
 const { Client, MessageMedia, LocalAuth, Location, Buttons} = require("whatsapp-web.js");
-var shortUrl = require("node-url-shortener")
+// const googleMapsClient = require('@google/maps').createClient({
+//     key: 'AIzaSyDH_m3M3RHw6s6AZeubtUZ8XIW7jC2MjCU'
+// });
+const {googleMapsClient} = require("@googlemaps/google-maps-services-js");
+var shortUrl = require("node-url-shortener");
 // const { io } = require("socket.io-client");
 // const socket = io("https://socket.appxi.net");
 
@@ -1187,7 +1191,7 @@ client.on('message', async msg => {
                         }
                         var miubicacion = await axios.post(process.env.APP_URL+'api/ubicacion/save', midata)
                         locations.set(msg.from, miubicacion.data.id)
-                        client.sendMessage(msg.from, 'Gracias, para poder llegar mas rapido a tu ubicacion (mapa), envía una descripcion de tu ubicacion')
+                        client.sendMessage(msg.from, 'Gracias, para poder llegar mas rápido a tu ubicación (mapa), envía una descripción de tu ubicación\nEjemplo: Al frente de la tienda X.')
                         status.set(msg.from, 1.5)//estado mapa
                     } else {
                         client.sendMessage(msg.from, '*Tu carrito está vacio*\n *A* .- TODOS LOS NEGOCIOS')
@@ -1286,6 +1290,20 @@ app.post('/newproduct', async (req, res) => {
     res.send('Mensaje Enviado') 
 });
 
+app.post('/savepedido', async (req, res) => {
+    var message = 'Pedido Realizado'
+    var phone = req.body.phone    
+    var pasarela = req.body.pasarela    
+    var location = req.body.location  
+    // var cliente_id = await axios()
+    var micliente = await axios(process.env.APP_URL+'api/cliente/'+phone)
+    var efectivo = 2.1 // QR 1.7
+    enviar_pedido(phone, pasarela, micliente, efectivo)
+    client.sendMessage(phone, message)  
+    // status.set(phone, 0)
+    res.send('Mensaje Enviado') 
+});
+
 const Categorias_Prod = async(categoria_id, minegocio) =>{
     var validador= false;
     for (let index = 0; index < minegocio.productos.length; index++) {
@@ -1298,6 +1316,28 @@ const Categorias_Prod = async(categoria_id, minegocio) =>{
 
 const negocios_pedido = async(id) =>{
     var negocios3= await axios(process.env.APP_URL+'api/pedido/negocios/'+id)
+    var send_negocios = []
+    var searchrep = []
+    for (let index = 0; index < negocios3.data.length; index++) {
+        if(searchrep[index] === negocios3.data[index].negocio.id){
+        }else{
+            var rep=0;
+            for (let j = 0; j < send_negocios.length; j++) {
+                if(send_negocios[j].id==negocios3.data[index].negocio.id){
+                    rep+=1;
+                }                                
+            }
+            if(rep==0){
+                send_negocios.push(negocios3.data[index].negocio)
+            }
+        }
+        searchrep.push(negocios3.data[index].negocio.id)
+    }
+    return send_negocios;
+}
+
+const negocios_carrito = async(chatbot_id) =>{
+    var negocios3= await axios(process.env.APP_URL+'api/cart/negocios/'+chatbot_id)
     var send_negocios = []
     var searchrep = []
     for (let index = 0; index < negocios3.data.length; index++) {
@@ -1336,7 +1376,11 @@ const menu_principal = async (micliente, phone) => {
 
 const cart_list = async (phone, micliente) => {
     var miresponse = await axios.post(process.env.APP_URL+'api/chatbot/cart/get', {chatbot_id: phone})
-    var micant = await axios(process.env.APP_URL+'api/pedido/carrito/negocios/'+phone)
+    // var micant = await axios(process.env.APP_URL+'api/pedido/carrito/negocios/'+phone)
+    var send_negocios= await negocios_carrito(phone)
+    var len_ubi= micliente.data.ubicaciones.length
+    var ubicacion_actual = micliente.data.ubicaciones[(len_ubi-1)]
+    var total_delivery=await calcular_delivery(send_negocios, ubicacion_actual)
     if (miresponse.data.length != 0) {
         var list = '*Lista de productos en tu carrito*\n'
         var total = 0
@@ -1357,8 +1401,8 @@ const cart_list = async (phone, micliente) => {
         list += '------------------------------------------ \n'
         list += '*PRODUCTOS* .- '+total+' Bs. \n'
         list += '*EXTRAS* .- '+total_extras+' Bs. \n'
-        list += '*DELIVERY* .- '+(micant.data * parseFloat(micliente.data.localidad.tarifa))+' Bs.\n'
-        list += '*TOTAL* .- '+(total + total_extras +(micant.data * parseFloat(micliente.data.localidad.tarifa)))+' Bs.'
+        list += '*DELIVERY* .- '+total_delivery+' Bs.\n'
+        list += '*TOTAL* .- '+(total + total_extras + parseFloat(total_delivery))+' Bs.'
         client.sendMessage(phone, list)
     } else {
         client.sendMessage(phone, 'Tu carrito está vacio')
@@ -1470,10 +1514,14 @@ const enviar_pedido = async (chatbot_id, pago_id, cliente_id, estado_cliente) =>
         }
         searchrep.push(negocios3.data[index].negocio.id)
     }
+    var len_ubi= cliente_id.data.ubicaciones.length
+    var ubicacion_actual = cliente_id.data.ubicaciones[(len_ubi-1)]
+    var total_delivery=await calcular_delivery(send_negocios, ubicacion_actual)
+
     var midata2={
         pedido_id: newpedido.data.id,
         negocios: send_negocios.length,
-        total_delivery: send_negocios.length * parseFloat(cliente_id.data.localidad.tarifa)
+        total_delivery: total_delivery
     }
     await axios.post(process.env.APP_URL+'api/update/pedido/delivery', midata2)
     var mipedido = await axios(process.env.APP_URL+'api/pedido/'+newpedido.data.id)
@@ -1556,8 +1604,8 @@ const enviar_pedido = async (chatbot_id, pago_id, cliente_id, estado_cliente) =>
         mitext += '*Productos:* '+cantidad_mensajero+' Cant.\n'                                               
         mitext += '*Negocios:* '+send_negocios.length+' Cant.\n'
         mitext += '*Extras:* '+total_extras+' Bs.\n'
-        mitext += '*Delivery:* '+((send_negocios.length)*parseFloat(cliente_id.data.localidad.tarifa))+' Bs.\n'
-        mitext += '*Total:* '+(total_extras+total_mensajero+((send_negocios.length)*parseFloat(cliente_id.data.localidad.tarifa)))+' Bs.\n'
+        mitext += '*Delivery:* '+total_delivery+' Bs.\n'
+        mitext += '*Total:* '+(total_extras+total_mensajero+parseFloat(total_delivery))+' Bs.\n'
         mitext += '------------------------------------------\n'
         mitext += 'QUIERES TOMAR EL PEDIDO *#'+mipedido.data.id+'* ?\n'
         mitext += '*A* .- Ver todos lo pedidos en cola\n'
@@ -1571,4 +1619,161 @@ const enviar_pedido = async (chatbot_id, pago_id, cliente_id, estado_cliente) =>
     pedidos.set(chatbot_id, mipedido.data) // pedido
 }
 
+
+const calcular_delivery = async (send_negocios, milocation) => {
+    var calc_envio=0
+    switch (send_negocios.length) {
+        case 1:
+            //var minegocio = await axios('https://appxi.net/api/app/negocio/by/'+minegocios[0])
+            var tiempo_total=0
+            var distancia_total=0
+            var points = {
+                origin: { lat: parseFloat(send_negocios[0].latitud), lng: parseFloat(send_negocios[0].longitud) },
+                destination: { lat: parseFloat(milocation.latitud), lng: parseFloat(milocation.longitud) },
+                //travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };	
+                // var directionsService = new google.maps.DirectionsService();
+                // directionsService.route(points, async function(response, status) {
+                //     if (status == google.maps.DirectionsStatus.OK) {
+                //         directionsDisplay.setDirections(response)
+                //         tiempo_total=response.routes[0].legs[0].duration.value
+                //         distancia_total= response.routes[0].legs[0].distance.value
+                //         calc_envio= await calcular_costo(response.routes[0].legs[0].distance.value)
+                //         console.log(response.routes[0].legs[0].duration.value)
+                //         console.log(response.routes[0].legs[0].distance.value)
+                //         console.log(await calcular_costo(response.routes[0].legs[0].distance.value))
+                //     }
+                // });
+                const miclient = new googleMapsClient({})
+                miclient
+                    .elevation({
+                        params: {
+                        locations: [{ lat: 45, lng: -110 }],
+                        key: "AIzaSyDH_m3M3RHw6s6AZeubtUZ8XIW7jC2MjCU",
+                        },
+                        timeout: 1000, // milliseconds
+                    })
+                    .then((r) => {
+                        console.log(r.data.results[0].elevation);
+                    })
+                    .catch((e) => {
+                        console.log(e.response.data.error_message);
+                    });
+            break;
+        case 2:
+
+            // var minegocio1 = await axios('https://appxi.net/api/app/negocio/by/'+minegocios[0])
+            // var minegocio2 = await axios('https://appxi.net/api/app/negocio/by/'+minegocios[1])
+            var tiempo_total = 0
+            var distancia_total = 0					
+            var points1 = {
+                origin: { lat: parseFloat(send_negocios[0].latitud), lng: parseFloat(send_negocios[0].data.longitud) },
+                destination: { lat: parseFloat(send_negocios[1].latitud), lng: parseFloat(send_negocios[1].longitud) },
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+           
+            directionsService1.route(points1, async function(response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay1.setDirections(response)
+                    tiempo_total += response.routes[0].legs[0].duration.value
+                    distancia_total += response.routes[0].legs[0].distance.value
+                    // console.log(response.routes[0].legs[0].distance.value)
+                }
+            });					
+            var points2 = {
+                origin: { lat: parseFloat(send_negocios[0].latitud), lng: parseFloat(send_negocios[0].longitud) },
+                destination: { lat: parseFloat(milocation.latitud), lng: parseFloat(milocation.longitud) },
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };	
+            directionsService2.route(points2, async function(response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay2.setDirections(response)
+                    tiempo_total += response.routes[0].legs[0].duration.value
+                    distancia_total += response.routes[0].legs[0].distance.value
+                    // console.log(response.routes[0].legs[0].distance.value)
+                    // $("#mitiempo").html(formatMoney(tiempo_total/60, ".", ","))
+                    // $("#midistancia").html(formatMoney(distancia_total/1000, ".", ","))
+                    calc_envio = await calcular_costo(distancia_total)
+                    
+                }
+            });					
+        
+            break;
+        case 3:
+            // var minegocio1 = await axios('https://appxi.net/api/app/negocio/by/'+minegocios[0])
+            // var minegocio2 = await axios('https://appxi.net/api/app/negocio/by/'+minegocios[1])
+            // var minegocio3 = await axios('https://appxi.net/api/app/negocio/by/'+minegocios[2])
+            var tiempo_total = 0
+            var distancia_total = 0				
+
+            //1
+            var points1 = {
+                origin: { lat: parseFloat(send_negocios[0].latitud), lng: parseFloat(send_negocios[0].longitud) },
+                destination: { lat: parseFloat(send_negocios[1].latitud), lng: parseFloat(send_negocios[1].longitud) },
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+            
+            directionsService1.route(points1, async function(response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay1.setDirections(response)
+                    tiempo_total += response.routes[0].legs[0].duration.value
+                    distancia_total += response.routes[0].legs[0].distance.value
+                    // console.log(response.routes[0].legs[0].distance.value)
+                }
+            });	
+
+            //2
+            var points2 = {
+                origin: { lat: parseFloat(send_negocios[1].latitud), lng: parseFloat(send_negocios[1].longitud) },
+                destination: { lat: parseFloat(send_negocios[2].latitud), lng: parseFloat(send_negocios[2].longitud) },
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+          
+            directionsService2.route(points2, async function(response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay1.setDirections(response)
+                    tiempo_total += response.routes[0].legs[0].duration.value
+                    distancia_total += response.routes[0].legs[0].distance.value
+                    // console.log(response.routes[0].legs[0].distance.value)
+                }
+            });	
+
+            // 3			
+            var points3 = {
+                origin: { lat: parseFloat(send_negocios[2].latitud), lng: parseFloat(send_negocios[2].longitud) },
+                destination: { lat: parseFloat(milocation.latitud), lng: parseFloat(milocation.longitud) },
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };	
+            
+            directionsService3.route(points3, async function(response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay3.setDirections(response)
+                    tiempo_total += response.routes[0].legs[0].duration.value
+                    distancia_total += response.routes[0].legs[0].distance.value
+                    // console.log(response.routes[0].legs[0].distance.value)
+                    // $("#mitiempo").html(formatMoney(tiempo_total/60, ".", ","))
+                    // $("#midistancia").html(formatMoney(distancia_total/1000, ".", ","))
+                    calc_envio = await calcular_costo(distancia_total)
+                }
+            });	
+    
+            break;
+        default:
+            break;
+    }
+    return Math.round(calc_envio);
+}
+
+const calcular_costo = async (mivalue) => {
+    var km = mivalue / 1000
+    if (km < 3) {
+        return 4
+    } else if(km < 5) {
+        return 6
+    }else if(km < 7){
+        return 8
+    }else{
+        return 12
+    }
+}
 client.initialize();

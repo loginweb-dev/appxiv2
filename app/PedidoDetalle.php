@@ -16,7 +16,8 @@ class PedidoDetalle extends Model
         'producto_name',
         'total',
         'negocio_id',
-        'negocio_name'
+        'negocio_name',
+        'mensaje'
     ];
 
     protected $appends=['published'];

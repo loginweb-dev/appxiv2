@@ -8,7 +8,7 @@ class ProductosNegocio extends AbstractAction
 {
     public function getTitle()
     {
-        return 'Poductos';
+        return 'Productos';
     }
 
     public function getIcon()

@@ -45,3 +45,9 @@
 	</article>
 	</div>
 </div>
+
+<script>
+	$(document).ready(function () {
+		$("#nombre").val(localStorage.getItem('minombre'))		
+	});
+</script>

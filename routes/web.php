@@ -114,14 +114,32 @@ Route::get('/perfil', function () {
     return view('sesiones.home');
 })->name('perfil');
 
+
+// Registros ---------------------------------
+Route::group(['prefix' => 'registros'], function () {
+    Route::get('/', function () {
+        return view('registros.index');
+    })->name('registros.index');
+    Route::get('/negocio', function () {
+        return view('registros.negocio');
+    })->name('registros.negocio');
+});  
+
+
+
+
+// CARITOS ---------------------------------
 Route::group(['prefix' => 'carrito'], function () {
     Route::get('/list/{chatbot_id}', function ($chatbot_id) {
         return view('carritos.list');
     })->name('carritos.list');
     Route::get('/confirm/{chatbot_id}', function ($chatbot_id) {
-        return view('carritos.confirm');
+        $pasarela = App\Pago::all();
+        return view('carritos.confirm', compact('pasarela'));
     })->name('carritos.confirm');
 });  
+
+
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
     Route::get('/mispedidos/{id}', function ($id) {
@@ -162,6 +180,14 @@ Route::group(['prefix' => 'admin'], function () {
     })->name('ajax.ventas.pago');
     //ajax
 
+    // replique
+    Route::get('/replicate/horario/{id}', function ($id) {
+        $item = App\Horario::find($id);
+        $new = $item->replicate();
+        $new->save();
+        return redirect('admin/horarios');
+    })->name('replicate.horario');
+
 });
 
 // TAXI
@@ -173,7 +199,7 @@ Route::group(['prefix' => 'taxi'], function () {
 
 //NEGOCIOS PRODUCTOS
 Route::get('{slug}', function ($slug) {
-    $negocio = App\Negocio::where('slug', $slug)->with('productos', 'tipo')->first();
+    $negocio = App\Negocio::where('slug', $slug)->with('productos', 'tipo', 'horarios')->first();
     // return $negocio;
     return view('negocio', compact('negocio')); 
 })->name('negocio');

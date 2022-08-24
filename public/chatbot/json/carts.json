@@ -1,3 +1,19 @@
 {
-    "59172834094@c.us": 22
+    "59172834094@c.us": 22,
+    "59171130523@c.us": {
+        "id": 4628,
+        "nombre": "Pacumuto - Lomito",
+        "precio": 220,
+        "extra": false,
+        "negocio_id": 31,
+        "negocio_nombre": "Churrasqueria El Cuadril"
+    },
+    "59170269362@c.us": {
+        "id": 4628,
+        "nombre": "Pacumuto - Lomito",
+        "precio": 220,
+        "extra": false,
+        "negocio_id": 31,
+        "negocio_nombre": "Churrasqueria El Cuadril"
+    }
 }

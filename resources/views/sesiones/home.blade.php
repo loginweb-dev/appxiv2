@@ -94,7 +94,9 @@
 							url: "/misession?user_id="+result.data.user.id,
 							data: "html",
 							success: function (response) {
-								$("#mibody").html(response)
+								// $("#mibody").html(response)
+								localStorage.setItem('minombre', $("#nombre").val())
+								location.href = localStorage.getItem('mivolver')
 							}
 						});
 					} else {
@@ -105,6 +107,7 @@
 						// $(".setpin").attr('hidden', false)
 						$("#pin").val('')
 						toastr.show("Pin incorrecto")
+
 					}				
 			}
 		 }

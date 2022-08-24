@@ -18,7 +18,8 @@ class Pedido extends Model
         'ubicacion_id',
         'estado_id',
         'total_delivery',
-        'negocios'
+        'negocios',
+        'mensaje'
     ];
 
 	protected $appends=['published', 'fecha'];

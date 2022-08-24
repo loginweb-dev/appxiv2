@@ -37,10 +37,10 @@ class Negocio extends Model
         return $this->hasMany(Extraproducto::class);
     }
 
-    // public function categorias()
-    // {
-    //     return $this->hasMany(Categoria::class, 'tipo_id');
-    // }
+    public function horarios()
+    {
+      return $this->hasMany(Horario::class);
+    }
     public function user()
     {
         // return $this->hasOne(\TCG\Voyager\Models\User::class, 'id');

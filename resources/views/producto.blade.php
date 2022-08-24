@@ -95,26 +95,52 @@
                   <tr>
                     <td width="50%">
                       <div class="">
-                        @if ($producto->precio > 0)
-                          Precio Bs:
-                          <h2 class="mitext text-center">{{ number_format($producto->precio, 2, ',', '.') }}</h2>
-                          <input type="number" id="miprecio" value="{{ $producto->precio }}" hidden>
-                        @else
-                          @php
-                            $rel=App\RelProductoPrecio::where('producto_id', $producto->id)->get();                          
-                          @endphp 
-                          Precios Bs:
-                          <select id="miprecios" class="form-control">
-                            <option value="0">Elige un Precio</option>
-                            @foreach ($rel as $item)
-                                @php
-                                    $precio = App\Precio::find($item->precio_id);
-                                @endphp
-                                <option value="{{ $precio->precio }}">{{ $precio->nombre.' '.$precio->precio }}</option>
-                            @endforeach
-                          </select>
-                          <input type="number" id="miprecio" value="0" hidden>
-                        @endif
+
+                        @php
+                            $miprecio = 0
+                        @endphp
+               
+                          @if ($producto->precio > 0)
+                            @if ($producto->endescuento)                         
+                              @php
+                                  $miprecio = $producto->precio -  ($producto->precio *  ($producto->endescuento / 100));
+                              @endphp
+                            @else
+                              @php
+                                  $miprecio = $producto->precio;
+                              @endphp
+                            @endif                  
+                            Precio Bs:
+                            <h2 class="mitext text-center">{{ number_format($miprecio, 2, ',', '.') }}</h2>
+                            <input type="number" id="miprecio" value="{{ $miprecio}}" hidden>
+                          @else
+                            @php
+                              $rel=App\RelProductoPrecio::where('producto_id', $producto->id)->get();                          
+                            @endphp 
+                 {{-- $miprecio = $precio->precio -  ($precio->precio *  ($precio->endescuento / 100)); --}}
+                            Precios Bs:
+                            <select id="miprecios" class="form-control">
+                              <option value="0">Elige un Precio</option>
+                              @foreach ($rel as $item)
+                                  @php
+                                      $precio = App\Precio::find($item->precio_id);
+                                  @endphp
+                                  @if ($producto->endescuento)                         
+                                    @php
+                                      $miprecio = $precio->precio -  ($precio->precio *  ($producto->endescuento / 100));
+
+                                    @endphp
+                                  @else
+                                    @php
+                                        $miprecio = $precio->precio;
+                                    @endphp
+                                  @endif  
+                                  <option value="{{ ceil($miprecio) }}">{{ $precio->nombre.' '.ceil($miprecio) }} Bs</option>
+                              @endforeach
+                            </select>
+                            <input type="number" id="miprecio" value="0" hidden>
+                          @endif
+                        
                       </div> 
                     </td>
                     <td>
@@ -196,7 +222,7 @@
       </div> 
 
       {{-- section interesar  --}}
-      <h4 class="mitext text-center">Te pueden interesar</h4>
+      <h4 class="mitext text-center m-2">Te pueden interesar</h4>
       <div class="container-fluid">       
           <div class="col-sm-12">            
             <div class="slick-slider" data-slick='{"slidesToShow": 3, "slidesToScroll": 3}'>
@@ -220,35 +246,88 @@
     @endif
   </div>
 </div>
+
+
+<div class="modal fade" id="modal_horario" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h4 class="modal-title mititle" id="exampleModalLabel"><img src="{{ Voyager::image(setting('site.logo')) }}" width="30" height="30" class="d-inline-block align-top rounded" alt="{{ $negocio->nombre }}"> Negocio Cerrado</h4>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<i class="fa-solid fa-circle-xmark"></i>
+		  </button>
+		</div>
+		<div class="modal-body text-center">
+			<p>EL negocio esta cerrado, no podra realizar pedidos</p>
+			<a href="#" data-dismiss="modal" class="btn btn-block miboton">Deseas continuar ?</a>
+		</div>
+	</div>
+</div>
 @endsection
 @section('javascript')
   <script>
 
   var toastr = new Toastr({});
 	$(document).ready( function(){
-    // $("#mireload").html("<div class='text-center'><img src='/reload.gif' alt='mireload' class='img-fluid m-2 p-2' width='200'></div>")    
-     
-    console.log( "ready!" );
-    $('#precio_producto').val('{{$producto->precio}}')  	
+    // $('#precio_producto').val('{{$producto->precio}}')  	
+    validar_horario()
     mitotal()
-    // $("#mireload").empty();
+    // console.log('mierda')
+    localStorage.setItem("mivolver", "{{ route('producto', [$negocio->slug, $producto->slug]) }}")
 	});
+
+
+	async function validar_horario() {
+		// validar horario
+		var d =new Date();
+		console.log(d.getDay());
+		switch (d.getDay()) {
+			case 1:
+				
+				break;
+			case 2:
+				console.log('martes')
+				var horario = await axios.post('https://appxi.net/api/app/horario/negocio', {
+					negocio_id: "{{ $negocio->id }}",
+					dia: 2
+				})
+				console.log(horario.data.apertura)
+				var time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+				console.log(time)
+
+				if(time > horario.data.apertura && time < horario.data.cierre){
+					console.log('Abierto')
+				}else{
+					console.log('Cerrado')
+					$("#modal_horario").modal()
+				}
+				break;
+			default:
+				break;
+		}
+	}
+
 
   function mitotal() {
     var total = 0
     var textras = 0
     var miextra = 0
-    @if($producto->extras)
+    @if($producto->extra)      
+      // total = (parseFloat($("#miprecio").val()) * parseInt($("#micant").val()))  
+      $('#total_producto').html("<h2 class='mitext text-center'>"+formatMoney(parseFloat($("#miprecio").val()) * parseInt($("#micant").val()), ".", ",")+"</h2>")
       $("#miextras :selected").map(async function(i, el) {
         var miextra = await axios('https://appxi.net/api/app/extra/by/'+$(el).val()) 
         textras += parseFloat(miextra.data.precio)
         total = (parseFloat($("#miprecio").val()) * parseInt($("#micant").val())) + textras
-        $('#total_producto').html("<h2 class='mitext text-center'>"+formatMoney(total, ".", ",")+"</h2>")
+        $('#total_producto').html("<h2 class='mitext text-center'>"+formatMoney(total, ".", ",")+"</h2>")        
       }).get();
+      console.log('con extra')
     @else
       total = (parseFloat($("#miprecio").val()) * parseInt($("#micant").val()))  
       $('#total_producto').html("<h2 class='mitext text-center'>"+formatMoney(total, ".", ",")+"</h2>")
+      console.log('sin extra')
     @endif
+
     // return total
   }
 
@@ -274,6 +353,9 @@
   $('#micant').on('change', async function(){
     if (this.value > 1) {
       $("#miextras").attr("hidden", true) 
+      // limpiar select multiple
+      $("#miextras option:selected").removeAttr("selected");
+
     }else{
       $("#miextras").attr("hidden", false) 
     }
@@ -281,17 +363,11 @@
   });
 
   $('#miextras').on('change', function(){
-    // var miselect = []
-    // $("#miextras :selected").map(function(i, el) {
-    //   miselect.push($(el).val())
-    // }).get()
-    console.log('miselect')
     mitotal()
   });
 
   async function agregar_carrito()
   {
-    // $("#mireload").html("<div class='text-center'><img src='/reload.gif' alt='mireload' class='img-fluid m-2 p-2' width='200'></div>")
     if ($("#miprecio").val() == 0) {
       toastr.show("Agrega un precio, por favor")
 

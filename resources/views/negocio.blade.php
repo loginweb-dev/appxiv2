@@ -20,11 +20,14 @@
   right: 0%;
   /* transform: translate(-150%, -150%); */
 } 
-#map {
+#map_negocio {
 		width: 100%;
 		height: 200px;
 	}
-
+	#map {
+        width: 100%;
+        height: 200px;
+    }
 .modal-content { 
     -webkit-border-radius: 20px;
 }
@@ -57,19 +60,19 @@
 	{{-- -------------- UI MOVIL -------------- --}}
 	<div class="d-block d-sm-none">
 		<nav class="navbar sticky-top navbar-light justify-content-center" style="background-color: #F0F0F4;">
-			<a class="navbar-brand text-truncate" href="#">
+			<a class="navbar-brand text-truncate" href="#" onclick="miinfo()">
 			  <img src="{{ $negocio->logo ? Voyager::image($negocio->Thumbnail('perfil' ,'logo')) : 'storage/'.setting('negocios.img_default_negocio') }}" width="30" height="30" class="d-inline-block align-top rounded" alt="{{ $negocio->nombre }}">
 			  {{ $negocio->nombre }}
 			</a>
 			<div id="miback">
 				<a href="#" onclick="mivolver()" class="mititle"><i class="fa-solid fa-circle-left fa-2xl"></i></a>
 			</div>  
-			<div id="miinfo">
+				{{-- <div id="miinfo">
 				<a href="#" onclick="miinfo()" class="mititle"><i class="fa-solid fa-circle-info fa-2xl"></i></a>
-			</div>  
+			</div>   --}}
 			
 			<div id="micart2">
-				<a href="#" onclick="micart()">
+				<a href="#" onclick="micart('/')">
 				  <div class="icon-wrap icon-xs round text-light" style="background-color: #0E2944">
 					<i class="fa-solid fa-cart-arrow-down"></i>
 					<span class="notify" style="background-color: #E12D47"><div id="micart_count"></div></span>				
@@ -116,8 +119,9 @@
 		</aside>
 
 		{{-- section search  --}}
+		{{-- {{ $negocio->estado ? "A B I E R T O" : "C E R R A D O"; }} --}}
 		<div style="background-color: #F0F0F4; padding: 10px;">
-			<h2 class="text-center">{{ $negocio->estado ? "A B I E R T O" : "C E R R A D O"; }}</h2>
+			<h2 class="text-center"><div id="horario_negocio"></div></h2>
 			<div class="text-center">
 				<ul class="rating-stars">
 					<li style="width: {{ $negocio->rating }}%" class="stars-active"> 
@@ -158,8 +162,8 @@
 								</div>
 							</div>
 							<figcaption class="p-1 align-self-center mititle">
-								<h6 class="title text-truncate text-center">{{ $item->nombre }}</h6>
-								@if ($item->precio > 0)
+								<h5 class="title text-truncate">{{ $item->nombre }}</h5>
+								{{-- @if ($item->precio > 0)
 									<p>{{ number_format($item->precio, 2, ',', '.') }} Bs.</p>
 								@else
 									@php
@@ -173,7 +177,7 @@
 											<option value="{{ $precio->precio }}">{{ $precio->nombre.' '.$precio->precio }}Bs</option>
 										@endforeach
 									</select>
-								@endif
+								@endif --}}
 								<p>{{ $item->detalle }}</p>
 							</figcaption>
 						</figure> 
@@ -261,6 +265,7 @@
 						$miproductos = App\Producto::where('negocio_id', $negocio->id)->where('categoria_id', $item->id)->where('ecommerce', 1)->orderBy('updated_at', 'desc')->get();
 					@endphp
 					@if (count($miproductos) != 0)
+						
 						<h4 class="text-center mitext m-2"><i class="fa-solid fa-filter"></i> {{ $item->nombre }}</h4>
 						<div class="container-fluid">
 							<div class="col-sm-12">							
@@ -340,7 +345,7 @@
 		  </button>
 		</div>
 		<div class="m-2">
-			<div id="map"></div>
+			<div id="map_negocio"></div>
 		</div>
 		
 		<div class="m-1 p-1">
@@ -351,20 +356,78 @@
 			<p>{{ $negocio->descripcion }}</p>
 			<hr>
 			<strong>Horario de Atencion:</strong>
-			<p>{{ $negocio->horario }}</p>
+			{{-- <p>{{ $negocio->horarios }}</p> --}}
+			<ul>		
+				@foreach ($negocio->horarios as $item)
+					@php
+						$dia_string = null;
+						switch ($item->dia) {
+							case 1:
+								$dia_string = 'Lunes';
+								break;
+							case 2:
+								$dia_string = 'Martes';
+								break;
+							case 3:
+								$dia_string = 'Miercoles';
+								break;
+							case 4:
+								$dia_string = 'Jueves';
+								break;
+							case 5:
+								$dia_string = 'Viernes';
+								break;
+							case 6:
+								$dia_string = 'Sabado';
+								break;
+							case 7:
+								$dia_string = 'Domingo';
+								break;						
+							default:
+								# code...
+								break;
+						}
+					@endphp
+					<li>{{ $dia_string.' '.$item->apertura.' a '.$item->cierre }}</li>
+				@endforeach
+			</ul>
 		</div>
 	  </div>
 	</div>
   </div>
   {{-- <div id="map"></div> --}}
-	@endsection
+
+<div class="modal fade" id="modal_horario" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h4 class="modal-title mititle" id="exampleModalLabel"><img src="{{ Voyager::image(setting('site.logo')) }}" width="30" height="30" class="d-inline-block align-top rounded" alt="{{ $negocio->nombre }}"> Negocio Cerrado</h4>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<i class="fa-solid fa-circle-xmark"></i>
+		  </button>
+		</div>
+		<div class="modal-body text-center">
+			<p>EL negocio esta cerrado, no podra realizar pedidos</p>
+			<strong>Horario</strong>
+			<div id="horario_dia"></div>
+			<a href="#" data-dismiss="modal" class="btn btn-block miboton">Deseas continuar ?</a>
+		</div>
+	</div>
+</div>
+@endsection
 
 @section('javascript')
 <script>
 	// var map = null
+
+
+    localStorage.setItem("mivolver", "{{ route('negocio', $negocio->slug) }}")
 	$(document).ready(function () {
+
+		validar_horario()
+
 		var myLatLng = { lat: parseFloat("{{ $negocio->latitud }}"), lng: parseFloat("{{ $negocio->longitud }}") }
-		map = new google.maps.Map(document.getElementById("map"), {
+		map = new google.maps.Map(document.getElementById("map_negocio"), {
 			center: myLatLng,
 			mapTypeId: "terrain",
 			zoom: 15,
@@ -379,9 +442,7 @@
 			map: map,
 			icon: "{{ Voyager::image($negocio->Thumbnail('icon' ,'logo')) }}"
 		});
-		// $("#mimap").height($(document).height()-500)
-		// var myLatLng = { lat: parseFloat(data.latitud), lng: parseFloat(data.longitud) }
-        // console.log(data.latitud)
+
 		var miorigen = JSON.parse(localStorage.getItem("mimapa"))
         var viaje = {
             origin: { lat: parseFloat(miorigen.latitud), lng: parseFloat(miorigen.longitud) },
@@ -396,27 +457,54 @@
 					$("#distancia").html(response.routes[0].legs[0].distance.text)
 					$("#tiempo").html(response.routes[0].legs[0].duration.text)
 					$("#envio").html(micalculo(response.routes[0].legs[0].distance.value)+' Bs')
-					// console.log(response.routes[0].legs[0].distance.value)
             }
         });
-
 
 		var viaje2 = {
             origin: { lat: parseFloat(miorigen.latitud), lng: parseFloat(miorigen.longitud) },
             destination: { lat: parseFloat("{{ $negocio->latitud }}"), lng: parseFloat("{{ $negocio->longitud }}") },
             travelMode: google.maps.DirectionsTravelMode.WALKING
         };
-
 		directionsService.route(viaje2, async function(response, status) {
             if (status == google.maps.DirectionsStatus.OK) {
 				$("#rtiempo").html(response.routes[0].legs[0].duration.text)
-					// console.log(response.routes[0].legs[0].distance.value)
 				$("#rdistancia").html(response.routes[0].legs[0].distance.text)
             }
         });
 
 	});
 
+	async function validar_horario() {
+		// validar horario
+		var d =new Date();
+		console.log(d.getDay());
+		switch (d.getDay()) {
+			case 1:
+				
+				break;
+			case 2:
+				console.log('martes')
+				var horario = await axios.post('https://appxi.net/api/app/horario/negocio', {
+					negocio_id: "{{ $negocio->id }}",
+					dia: 2
+				})
+				// console.log(horario.data.apertura)
+				var time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+				// console.log(time)
+				if(time > horario.data.apertura && time < horario.data.cierre){
+					console.log('Abierto')					
+					$("#horario_negocio").html('A B I E R T O')
+				}else{
+					console.log('Cerrado')
+					$("#modal_horario").modal()
+					$("#horario_negocio").html('C E R R A D O')
+					$("#horario_dia").html('Martes : '+horario.data.apertura+' a '+horario.data.cierre)
+				}
+				break;
+			default:
+				break;
+		}
+	}
 
 	function micalculo(mivalue) {
 		var km = mivalue / 1000
@@ -442,12 +530,14 @@
 			location.href = "?categoria="+this.value
     	}
   	})
+
 	function mivolver() {
 		location.href = "/"
 	}
+
 	function michat() {
 		@if(Auth::user())
-			localStorage.setItem("mivolver", "{{ route('negocio', $negocio->slug) }}")
+			// localStorage.setItem("mivolver", "{{ route('negocio', $negocio->slug) }}")
 			location.href = "/help?negocio={{ $negocio->slug }}"
 		@else
 			$("#milogin").modal()

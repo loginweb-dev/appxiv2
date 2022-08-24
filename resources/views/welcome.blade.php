@@ -39,7 +39,7 @@
 }
 #map {
         width: 100%;
-        height: 300px;
+        height: 200px;
     }
 </style>
 @endsection
@@ -82,8 +82,6 @@
       </a>
   
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation" style="background-color: #0E2944; color: white;">
-        {{-- <span class="navbar-toggler-icon"></span> --}}
-        {{-- <i class="fa-solid fa-cart-arrow-down"></i> --}}
         <i class="fa-solid fa-sliders"></i>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
@@ -95,7 +93,7 @@
             <a class="mititle" href="#" onclick="nuevoviaje()"> <i class="fa-solid fa-taxi fa-xl"></i> Solicitar Viaje (pedir taxi)</a>
           </li>
           <li class="list-group-item">
-            <a class="mititle" href="#" onclick="mihome()"><i class="fa-solid fa-user"></i> Perfil Viajes y Deliverys</a>
+            <a class="mititle" href="#" onclick="mihome()"><i class="fa-solid fa-user"></i> Perfil, Viajes y Compras</a>
           </li>
           {{-- <li class="list-group-item">
             <a class="mititle" href="#" onclick="mimaps()"><i class="fa-solid fa-location-crosshairs fa-xl"></i> Negocios Cerca de Ti</a> 
@@ -115,7 +113,7 @@
       </div>      
 
       <div id="micart">
-          <a href="#" onclick="micart()">
+          <a href="#" onclick="micart('/')">
             <div class="icon-wrap icon-xs round text-light" style="background-color: #0E2944">
               <i class="fa-solid fa-cart-arrow-down"></i>
               <span class="notify" style="background-color: #E12D47"><div id="micart_count"></div></span>
@@ -137,19 +135,19 @@
             <div class="carousel-item active">
               <div class="miaction">
                 <img class="d-block w-100" src="https://appxi.net//storage/landinpage/mibanner5.png" alt="First slide"> 
-                <a href="/taxi/nuevo" class="btn">SOLICITAR TAXI</a>              
+                <a href="#" onclick="nuevoviaje()" class="btn">SOLICITAR TAXI</a>              
               </div>
             </div>
             <div class="carousel-item">
               <div class="miaction">
                 <img class="d-block w-100" src="https://appxi.net//storage/landinpage/mibanner6.png" alt="Third slide">
-                <a href="/taxi/nuevo" class="btn">SOLICITAR TAXI</a>
+                <a href="#" onclick="nuevoviaje()" class="btn">SOLICITAR TAXI</a>
               </div>
           </div>
             <div class="carousel-item">
               <div class="miaction">
               <img class="d-block w-100" src="https://appxi.net//storage/landinpage/mibanner4.png" alt="Second slide">
-              <a href="/taxi/nuevo" class="btn">SOLICITAR TAXI</a>
+              <a href="#" onclick="nuevoviaje()" class="btn">SOLICITAR TAXI</a>
             </div>
             </div>
           </div>
@@ -176,41 +174,18 @@
         </div>      
       </div>
 
-			{{-- Como funciona --}}
-			{{-- <div class="micontent p-2 m-2 text-center">
-        <h6>Pide facil y sencillo en 3 pasos</h6>
-				<nav class="justify-content-center">
-					<div class="nav nav-tabs text-center" id="nav-tab" role="tablist">
-					<a class="nav-item nav-link active mititle" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"><i class="fa-solid fa-shoe-prints"></i> Paso 1</a>
-					<a class="nav-item nav-link mititle" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="fa-solid fa-shoe-prints"></i> Paso 2</a>
-					<a class="nav-item nav-link mititle" id="nav-profile-tab" data-toggle="tab" href="#nav-message" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="fa-solid fa-shoe-prints"></i> Paso 3</a>
-					</div>
-				</nav>
-				<div class="tab-content" id="nav-tabContent">
-					<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-						<div class="p-2">				
-
-						</div>
-					</div>
-					<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-						<div class="p-2">				
-
-						</div>
-					</div>
-					<div class="tab-pane fade" id="nav-message" role="tabpanel" aria-labelledby="nav-profile-tab">
-						<div class="p-1 m-2">
-							<a href="#" onclick="michat()" class="btn miboton btn-block"><i class="fa-solid fa-comment-dots"></i> Iniciar Chat</a>
-						</div>
-					</div>
-				</div>			  
-			</div> --}}
+      {{-- section promociones --}}
+      {{-- @foreach ($promociones as $item)
+          
+      @endforeach --}}
 
       {{-- section negocios por tipos --}}
       @if (isset($_GET['criterio']))
         @if (count($negocios) == 0)
-          <h2 class="text-center mitext">sin negocios</h2>
+          {{-- <h2 class="text-center mitext">sin negocios</h2> --}}
+          {{-- <small><i class="fa-solid fa-shop"></i> sin negocios </small>     --}}
         @else					
-          <h4 class="mitext text-center mt-1">Negocios</h4>
+          <h4 class="mitext text-center p-1 m-2">Negocios</h4>
           @foreach ($negocios as $item)				
           {{-- negocios --}}
             <div class="card mt-1">
@@ -223,7 +198,7 @@
                   </div>
                 </div>
                 <figcaption class="p-1 align-self-center mititle">
-                  <h5 class="mitext text-truncate">{{ $item->nombre }}</h5>
+                  <h5 class="mititle text-truncate">{{ $item->nombre }}</h5>
                   <p>{{ $item->descripcion }}</p>
                 </figcaption>
               </figure> 
@@ -232,29 +207,35 @@
           @endforeach
         @endif
         @if(count($productos) == 0)
-          <h2 class="text-center mitext">sin productos</h2>
+          {{-- <h2 class="text-center mitext">sin productos</h2> --}}
         @else				
-          <h4 class="mitext mitext text-center mt-1">Productos</h4>
-          @foreach ($productos as $item)				
-          {{-- productos --}}
-            <div class="card mt-1">
-              <a href="{{ route('producto', [$item->negocio->slug, $item->slug]) }}">
-              <figure class="itemside">
-                <div class="aside">
-                  <div class="img-wrap img-sm">          
-                    <img src="{{ $item->logo ? Voyager::image($item->thumbnail('cropped', 'image')) : Voyager::image($item->negocio->thumbnail('perfil', 'logo')) }}">
+          <h4 class="mitext mitext text-center p-1 m-2">Productos</h4>
+          @foreach ($productos as $item)		
+            @if ($item->negocio->estado)
+                
+            
+            {{-- productos --}}
+              <div class="card mt-1">
+                <a href="{{ route('producto', [$item->negocio->slug, $item->slug]) }}">
+                <figure class="itemside">
+                  <div class="aside">
+                    <div class="img-wrap img-sm">          
+                      <img src="{{ $item->logo ? Voyager::image($item->thumbnail('cropped', 'image')) : Voyager::image($item->negocio->thumbnail('perfil', 'logo')) }}">
+                    </div>
                   </div>
-                </div>
-                <figcaption class="p-1 align-self-center mititle">
-                  <h5 class="mitext text-truncate">{{ $item->nombre }}</h5>
-                  <p>{{ $item->detalle }}</p>
-                </figcaption>
-              </figure> 
-              </a>
-            </div>
+                  <figcaption class="p-1 align-self-center mititle">
+                    <h5 class="mititle text-truncate">{{ $item->nombre }}</h5>
+                        
+                    <p>{{ $item->detalle }}</p>
+                    <small><i class="fa-solid fa-shop"></i> {{ $item->negocio->nombre }}</small>    
+                  </figcaption>
+                </figure> 
+                </a>
+              </div>
+            @endif	
           @endforeach
-          <div class="text-center mt-2">
-            <a class="btn miboton" href="/">
+          <div class="text-center m-2">
+            <a class="btn miboton btn-block" href="/">
               <i class="fa-solid fa-rotate-left"></i> Volver
             </a>
           </div>        
@@ -281,6 +262,7 @@
                               <h6 class="title text-center">Leer mas</h6>
                             </a>
                           <div class="collapse text-center" id="collapse{{ $value->id }}" style="">
+                              <h6>{{ $value->nombre }}</h6>
                               <small>{{ $value->descripcion }}</small>
                           </div>
                             <div class="rating-wrap text-center">
@@ -320,6 +302,8 @@ $(document).ready(function () {
     console.log('not')    
     location.href = '/mapaset'
   }
+  // var d=new Date();
+  // console.log(d.getDay());
 });
 
   $('.mifiltros').change(function () {

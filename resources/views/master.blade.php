@@ -88,8 +88,8 @@
 
  #miinfo {
      position:absolute;
-     top: 25px;
-     right: 60px;
+     top: 20px;
+     right: 20px;
  }
 
  .miinput {
@@ -100,6 +100,16 @@
     border-radius: 20px;
     box-shadow: 1px 1px 1px 1px #0C2746;
 }
+
+.miselect {
+    /* width: 60%;
+    height: 25px;
+    margin: 0 auto; */
+    border: 2px solid #0C2746;
+    border-radius: 20px;
+    box-shadow: 1px 1px 1px 1px #0C2746;
+}
+
 
 .modal-dialog {
     position: fixed;
@@ -133,6 +143,10 @@
     overflow-y: auto;
 }
 
+/* #map {
+		width: 100%;
+		height: 100;
+	} */
   </style>
   @yield('css')
 </head>
@@ -196,32 +210,28 @@
   @else
   $("#micart_count").html("0")
   @endif
-function micart() {
+function micart(mivolver) {
     @if(Auth::user())      
       $("#micart_modal").modal()
-      // console.log("{{ count($micarrito) }}")
-      // $.ajax({
-      //   url: "https://appxi.net/carrito/list/{{ $cliente->chatbot_id }}",
-      //   dataType: "html",
-      //   success: function (response) {
-      //     $("#cart_body").html(response)
-      //   }
-      // });
       milist() 
     @else
-    $("#milogin").modal()
+      localStorage.setItem('mivolver', mivolver)
+      $("#milogin").modal()
     @endif
   }
   function milist() {
-    $.ajax({
-        url: "https://appxi.net/carrito/list/{{ $cliente->chatbot_id }}",
-        dataType: "html",
-        success: function (response) {
-          $("#cart_body").html(response)
+    @if(Auth::user())   
+      $.ajax({
+          url: "https://appxi.net/carrito/list/{{ $cliente->chatbot_id }}",
+          dataType: "html",
+          success: function (response) {
+            $("#cart_body").html(response)
         }
       });
+    @endif
   }
   function miconfirm() {
+    @if(Auth::user())  
     $.ajax({
         url: "https://appxi.net/carrito/confirm/{{ $cliente->chatbot_id }}",
         dataType: "html",
@@ -229,24 +239,56 @@ function micart() {
           $("#cart_body").html(response)
         }
       });
+      @endif
   }
   function miperfil(){
-    localStorage.setItem('mivolver', "/")
     location.href = '/perfil'
   }
 
-    $(window).scroll(function(){
-            if ($(this).scrollTop() > 100) {
-                $('.scrollup').fadeIn();
-            } else {
-                $('.scrollup').fadeOut();
-            }
-        });
+  async function removeitem(id) {
+    console.log(id)
+		await axios('https://appxi.net/api/app/removeitem/'+id) 
+		milist()
+	}
 
-        $('.scrollup').click(function(){
-            $("html, body").animate({ scrollTop: 0 }, 600);
-            return false;
-        });
+  async function savepedido(){
+    @if(Auth::user())
+      // var micart = await axios.post('https://appxi.net/api/chatbot/cart/get', {chatbot_id: msg.from})
+      var milocation = JSON.parse(localStorage.getItem('mimapa'))
+      var miubicacion = await axios.post('https://appxi.net/api/app/ubicacion/save', {
+          cliente_id: "{{ Auth::user()->id }}",
+          latitud: milocation.latitud,
+          longitud: milocation.longitud,
+          detalles: milocation.referencia
+          
+      })
+      // console.log($("#mipago").val())
+      switch (parseInt($("#mipago").val())) {
+        case 1: // contra entrega
+        console.log($("#mipago").val())
+          var newpedido = await axios.post('https://appxi.net/api/app/pedido/save', {
+              cliente_id: "{{ $cliente->id }}",
+              pago_id: 1, 
+              chatbot_id: "{{ $cliente->chatbot_id }}",                        
+              ubicacion_id: miubicacion.data.id,
+              total: localStorage.getItem('total_a_pagar'),
+              total_delivery: localStorage.getItem('total_envio'),
+              negocios: JSON.parse(localStorage.getItem('minegocios')).length,
+              mensaje: $("#mensaje_delivery").val()
+          })
+          // await axios.post('https://delivery-chatbot.appxi.net/message', {
+          //   phone: "{{ $cliente->chatbot_id }}",
+          //   message: "Pedido Relizado Correctamente.."
+          // })
+          location.href = "/perfil"
+          break;
+        default:
+          console.log('default')
+          break;
+      }
+    @endif
+  }
+
   </script>
   @yield('javascript')
   <!-- Google tag (gtag.js) - Google Analytics -->

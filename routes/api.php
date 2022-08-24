@@ -26,6 +26,7 @@ use TCG\Voyager\Traits\Resizable;
 use App\Precio;
 use App\RelProductoPrecio;
 use App\Laboratorio;
+use App\Horario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 /*
@@ -138,6 +139,10 @@ Route::get('carrito/negocios/{chatbot_id}', function($chatbot_id){
 
 Route::get('pedido/negocios/{id}', function($id){
     return PedidoDetalle::where('pedido_id', $id)->with('negocio', 'extras')->get();
+});
+
+Route::get('cart/negocios/{chatbot_id}', function($chatbot_id){
+    return Carrito::where('chatbot_id', $chatbot_id)->with('negocio', 'extras')->get();
 });
 
 Route::get('pedido/carrito/negocios/{chatbot_id}', function($chatbot_id){
@@ -842,7 +847,8 @@ Route::group(['prefix' => 'pos'], function () {
 });
 
 
-//Rutas APP --------------------------------
+//Rutas APP -------------------------------------
+// ----------------------------------------------
 Route::group(['prefix' => 'app'], function () {
 
     Route::post('cliente', function (Request $request) {
@@ -896,13 +902,92 @@ Route::group(['prefix' => 'app'], function () {
         return Cliente::where('user_id', $user_id)->first();
     });
 
-            //get extra
-            Route::get('extra/by/{id}', function($id){
-                return Extraproducto::find($id);
-            });
+    //get extra
+    Route::get('extra/by/{id}', function($id){
+        return Extraproducto::find($id);
+    });
 
-            
+    //get negocio
+    Route::get('negocio/by/{id}', function($id){
+        return Negocio::find($id);
+    });
+
+    //remove item cart
+    Route::get('removeitem/{id}', function($id){
+        $micart = Carrito::find($id);
+        $micart->delete();
+    });
+    Route::post('ubicacion/save', function (Request $request) {
+        $ubicacion = Ubicacione::create([
+            'latitud' => $request->latitud, //falta
+            'longitud' =>  $request->longitud,
+            'cliente_id'=> $request->cliente_id,
+            'detalles' => $request->detalles
+        ]);
+        return $ubicacion;
+    });
+    
+    Route::post('pedido/save', function (Request $request) {
+        $carts = Carrito::where('chatbot_id', $request->chatbot_id)->with('producto', 'extras')->get();
+        $newpedido = Pedido::create([
+            'cliente_id' => $request->cliente_id,
+            'pago_id' => $request->pago_id,
+            'mensajero_id'=>1,
+            'estado_id'=>1,
+            'chatbot_id' => $request->chatbot_id,
+            'ubicacion_id' => $request->ubicacion_id,
+            'descuento' => 0,
+            'total'=> $request->total,
+            'total_delivery' => $request->total_delivery,
+            'negocios' => $request->negocios,
+            'mensaje' => $request->mensaje
+        ]);
+    
+        //productos------
+        $mitotal = 0;
+        foreach ($carts as $item) {
+            $detalle= PedidoDetalle::create([
+                'producto_id' => $item->producto_id,
+                'pedido_id' =>  $newpedido->id,
+                'precio'=> $item->precio,
+                'cantidad' => $item->cantidad,
+                'producto_name' => $item->producto_name,
+                'total' =>$item->precio * $item->cantidad,
+                'negocio_name'=> $item->negocio_name,
+                'negocio_id'=> $item->negocio_id,
+                'mensaje' => $item->mensaje
+            ]);
+            //extras---------
+            foreach ($item->extras as $value) {
+                Extrapedido::create([
+                    'extra_id' => $value->extra_id,
+                    'precio' =>  $value->precio,
+                    'cantidad'=> $value->cantidad,
+                    'total' => $value->total,
+                    'pedido_id' => $newpedido->id,
+                    'pedido_detalle_id' =>$detalle->id
+                ]);
+            }
+        }
+        // vaciando carrito
+        $carritodel = Carrito::where('chatbot_id', $request->chatbot_id)->get();
+        foreach ($carritodel as $item) {
+            Extracarrito::where('carrito_id', $item->id)->delete();
+        }
+        Carrito::where('chatbot_id', $request->chatbot_id)->delete();    
+        return Pedido::find($newpedido->id);
+    });
+
+    //get dia negocio
+    Route::post('horario/negocio', function(Request $request){
+        return Horario::where('negocio_id', $request->negocio_id)->where('dia', $request->dia)->first();
+    });
 });
+//Rutas APP -------------------------------------
+// ----------------------------------------------
+
+
+
 
 //Rutas chatbot --------------------------------
 Route::group(['prefix' => 'chatbot'], function () {
@@ -924,6 +1009,7 @@ Route::group(['prefix' => 'chatbot'], function () {
             return $pedido;
         }
     });
+
     //Cambiar a Pedido Pagado
     Route::get('pedido/pago/estado/{id}', function($id){
         $pedido=Pedido::find($id);
@@ -934,6 +1020,7 @@ Route::group(['prefix' => 'chatbot'], function () {
 
 
 });
+
 
 Route::group(['prefix' => 'achatbot'], function () {
     //Desactivar un Producto del Negocio
